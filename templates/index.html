@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+
+<html lang="el">
+<head>
+    <meta charset="utf-8" />
+    <title>Paa Web App</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet"/>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="#" data-page="arxiki">Αρχική</a>
+            <a href="#" data-page="ta">ΤΑ Αρχικής</a>
+            <a href="#" data-page="mellontiki">ΤΑ Μελλοντικής</a>
+            <a href="#" data-page="epileximotita">Επιλεξιμότητα</a>
+            <a href="#" data-page="moria">Μοριοδότηση</a>
+
+        </nav>
+    </header>
+    <main>
+        
+        <form id="personal-info">
+            <fieldset>
+
+                <label for="AFM">ΑΦΜ: </label>
+                <input type="text"
+                       name="AFM"
+                       id="AFM" />
+                 </label>
+                 <label for="name">Όνομα: </label>
+                <input type="text"
+                       name="name"
+                       id="name" />
+                </label><label for="surname">Επώνυμο: </label>
+                <input type="text"
+                       name="surname"
+                       id="surname" />
+                 <label for="district">Περιφέρεια: </label>
+                <select id="district" name="district" required>
+                    <!-- Θα γεμίσει δυναμικά από το /api/regions -->
+                </select>
+        </form>">
+</body>
+</html>
