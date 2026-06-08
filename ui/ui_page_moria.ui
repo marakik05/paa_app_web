@@ -1,0 +1,912 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>page_moria</class>
+ <widget class="QWidget" name="page_moria">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1009</width>
+    <height>680</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>781</width>
+    <height>483</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>1009</width>
+    <height>16777215</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <property name="sizeConstraint">
+    <enum>QLayout::SetMinAndMaxSize</enum>
+   </property>
+   <item>
+    <widget class="QScrollArea" name="scrollArea">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+       <horstretch>1</horstretch>
+       <verstretch>1</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>-254</x>
+        <y>0</y>
+        <width>1226</width>
+        <height>768</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="9" column="1">
+        <widget class="QComboBox" name="comboBox_3_1_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="19" column="2">
+        <widget class="QLineEdit" name="lineEdit_epileximos">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0">
+        <widget class="QLabel" name="label_16">
+         <property name="text">
+          <string>4.1 Αξιολογείται και βαθμολογείται η κατηγορία επενδυτικών δαπανών. 1. Επενδύσεις σε ΑΠΕ, 2. Σταβλικές εγκαταστάσεις και εξοπλισμός ζωικής παραγωγής, σιλό αποθήκευσης ζωοτροφών
+ και αμελκτικές μηχανές, 3. Θερμοκήπια, δικτυοκήπια, εγκαταστάσεις φυτικής παραγωγής τύπου τολ (πίνακα 9.2α  του παρ. 9 της ΥΑ) και εξοπλισμός τους,  4. Επενδύσεις που αφορούν 
+στην προετοιμασία για πρώτη πώληση (κτίρια και εξοπλισμός), 5. Εγκατάσταση νέων φυτειών, 6. Επενδύσεις που αφορούν σε αποθηκευτικούς χώρους (κτίρια και μηχανολογικός εξοπλισμός 
+λειτουργίας τους) προϊόντων της εκμετάλλευσης, 7. Αγορά αγροτεμαχίου όμορου προς ιδιόκτητο αγροτεμάχιο
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="0">
+        <widget class="QLabel" name="label_17">
+         <property name="text">
+          <string>5.1 Αξιολογείται και βαθμολογείται η καινοτομία των επενδυτικών δαπανών με προτεραιότητα σε αυτές που αφορούν σε γεωργία ακριβείας και την έξυπνη γεωργία. </string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="text">
+          <string>3.3 Αξιολογείται και βαθμολογείται το επίπεδο εκπαίδευσης του υποψηφίου
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1">
+        <widget class="QComboBox" name="comboBox_3_1_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QLineEdit" name="lineEdit_2_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="2">
+        <widget class="QLineEdit" name="lineEdit_5_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="2">
+        <widget class="QLineEdit" name="lineEdit_6_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QLineEdit" name="lineEdit_2_2_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="label_10">
+         <property name="text">
+          <string>3.1.4 Ύπαρξη κερδοφορίας κατά τις 3 τελευταίες διαχειριστικές χρήσεις (μέσος όρος 3ετίας) προ φόρων και αποσβέσεων
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="2">
+        <widget class="QLineEdit" name="lineEdit_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_1_4_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="label_14">
+         <property name="text">
+          <string>3.4 Αξιολογείται και βαθμολογείται ο βαθμός συμμετοχής του υποψηφίου σε συλλογικά σχήματα και συνεταιρισμούς. Επιλέξτε αν ο παραγωγός είναι μέλος σε κάποιο συλλογικό σχήμα
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QComboBox" name="comboBox_1_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="17" column="1">
+        <widget class="QComboBox" name="comboBox_7_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="label_3">
+         <property name="text">
+          <string>1.1 Βαθμολογείται όταν το ποσοστό της τυπικής απόδοσης της εκμετάλλευσης στην υφιστάμενη κατάσταση (ΕΑΕ 2022) που προέρχεται από την αιγο-προβατοτροφία ή/και την παραγωγή 
+οπωροκηπευτικών ή/και τις καλλιέργειες και τις εκτροφές που συμβάλλουν στην επισιτιστική επάρκεια και ασφάλεια ή/και την ελαιοκαλλιέργεια ή/και την μελισσοκομία ή/και το βαμβάκι 
+ή/και την αμπελοκαλλιέργεια ή/και τις ανθεκτικές στην κλιματική αλλαγή καλλιέργειες ή συμβάλει στην άμβλυνση των επιπτώσεων της κλιματικής αλλαγής υπερβαίνει το 80% της συνολικής 
+τυπικής απόδοσης της εκμετάλλευσης
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="1">
+        <widget class="QLabel" name="label_20">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Συνολική βαθμολογία&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="label_7">
+         <property name="text">
+          <string>3.1.1 Τεκμηριωμένη ικανότητα κάλυψης του αιτούμενου προϋπολογισμού κατά την υποβολή της αίτησης στήριξης. Αποδίδονται 20 μόρια εφόσον η ικανότητα κάλυψης του αιτούμενου 
+π/υ με ίδια κεφάλαια υπερβαίνει το 20% και έως 50 μόρια (αναλογικά) εφόσον υπερβαίνει 50% του αιτούμενου π/υ
+ </string>
+         </property>
+        </widget>
+       </item>
+       <item row="15" column="1">
+        <widget class="QLineEdit" name="lineEdit_5_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_4">
+         <property name="text">
+          <string>1.2 Eκμεταλλεύσεις οι οποίες διαθέτουν πιστοποίηση βιολογικών ή/και ενωσιακών/εθνικών/λοιπών συστημάτων ποιότητας η οποία κάλυπτε τις καλλιέργειες / εκτροφές που δηλώθηκαν 
+στην ΕΑΕ του έτους 2022. Βαθμολογείται εφόσον η τυπική απόδοση των πιστοποιημένων καλλιεργειών / εκτροφών υπερβαίνει, αθροιστικά, το 50% της συνολικής τυπικής απόδοσης της 
+υφιστάμενης κατάστασης (ΕΑΕ 2022). (συμπεριλαμβάνονται ΠΟΠ/ΠΓΕ)
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_5_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <widget class="QLineEdit" name="lineEdit_3_1_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_1_2_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="label_6">
+         <property name="text">
+          <string>2.2 Βαθμολογούνται εκμεταλλεύσεις με τυπική απόδοση : α)έως και 15.000 € που το ύψος των αιτούμενων επενδύσεων δεν ξεπερνά τα 75.000 €, β) πάνω από 15.000 € που το σύνολο
+ των αιτούμενων επενδύσεων δεν ξεπερνούν πενταπλάσιο της παραγωγικής δυναμικότητας, γ)πάνω από 12.500 € που το σύνολο των αιτούμενων επενδύσεων δεν ξεπερνούν το εξαπλάσιο 
+της παραγωγικής δυναμικότητας
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLineEdit" name="lineEdit_budget">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_1_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="2">
+        <widget class="QLineEdit" name="lineEdit_7_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>2.1 Αξιολογείται το οικονομικό μέγεθος της εκμετάλλευσης στην υφιστάμενη κατάσταση σε όρους τυπικής απόδοσης. Εκμετάλλευση με τυπική απόδοση, βάσει της ΕΑΕ του έτους 2025:
+ α) έως 16.000€, β) από 16.000 έως 25.000 €, γ)  άνω των 25.000 €
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="lineEdit_1_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="17" column="0">
+        <widget class="QLabel" name="label_19">
+         <property name="text">
+          <string>7.1 Αξιολογείται και βαθμολογείται η πραγματοποίηση επενδύσεων σε εκμεταλλεύσεις περιοχών που έχουν κηρυχθεί πυρόπληκτες </string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0">
+        <widget class="QLabel" name="label_12">
+         <property name="text">
+          <string>3.2 Αξιολογείται και βαθμολογείται η δυναμική του υποψηφίου
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QLineEdit" name="lineEdit_2_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="1">
+        <widget class="QComboBox" name="comboBox_3_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="lineEdit_2_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_1_3_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_2_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="1">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Επιλεξιμότητα&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="1">
+        <widget class="QComboBox" name="comboBox_3_1_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QLineEdit" name="lineEdit_1_2_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>3.1.2 Ύπαρξη φορολογική και ασφαλιστικές ενημερότητες (για είσπραξη χρημάτων – όχι για κάθε νόμιμη χρήση) χωρίς παρακρατούμενες οφειλές
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="1">
+        <widget class="QComboBox" name="comboBox_6_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Ναι</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Όχι</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QLineEdit" name="lineEdit_1_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="label_15">
+         <property name="text">
+          <string>3.5 Βαθμολογείται η συμμετοχή του υποψήφιου σε σχήματα συμβολαιακής γεωργίας στην υφιστάμενη κατάσταση
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="1">
+        <widget class="QComboBox" name="comboBox_3_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κατοχή πτυχίου &gt;= 6, 7, 8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κατοχή γεωτεχνικού πτυχίου =&lt; 3, 4, 5</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κατοχή γεωτεχνικού πτυχίου &gt;= 6, 7, 8</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κανένα από τα παραπάνω</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="8" column="0">
+        <widget class="QLabel" name="label_9">
+         <property name="text">
+          <string>3.1.3 Ύπαρξη αδειών απαραίτητων για την υλοποίηση κατά την υποβολή της αίτησης στήριξης
+</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="label">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ΚΡΙΤΗΡΙΑ ΜΟΡΙΟΔΟΤΗΣΗΣ ΥΠΟΨΗΦΙΟΥ&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="2">
+        <widget class="QLineEdit" name="lineEdit_4_1_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0">
+        <widget class="QLabel" name="label_18">
+         <property name="text">
+          <string>6.1 Αξιολογείται και βαθμολογείται η συμμετοχή σε κλάδους (στην υφιστάμενη κατάσταση) που αναδεικνύονται στο πλαίσιο των ιδιαιτεροτήτων και αναγκών της κάθε Περιφέρειας αλλά και τις 
+στρατηγικές RIS3. </string>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="1">
+        <widget class="QLineEdit" name="lineEdit_4_1">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item row="11" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_3_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QLineEdit" name="lineEdit_3_4_moria">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="1">
+        <widget class="QComboBox" name="comboBox_3_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ΟΠ/Ομ.Π με μέλη&gt;10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ΑΣ</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ΑΣ και ΟΠ/Ομ.Π με μέλη&gt;10</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Αναγκαστικός Συνεταιρισμός</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κανένα από τα παραπάνω</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="10" column="1">
+        <widget class="QComboBox" name="comboBox_3_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <item>
+          <property name="text">
+           <string>--Επιλέξτε</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Νέος Αγρότης 2018 ή 2021</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Επιλαχόντας του Μ6.1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Εμπειρία &gt;5 ετών και έως 50 ετών</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Κανένα από τα παραπάνω</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="label_21">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Προϋπολογισμός έργου&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

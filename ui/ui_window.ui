@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1046</width>
+    <height>802</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">*{
+font-size:9pt;
+font-family:&quot;Verdana&quot;,&quot;Arial&quot;, &quot;Helvetica&quot;,  sans-serif;
+}
+QMainWindow {
+    background-color: #F2F7FA;
+}
+QScrollArea{
+background-color: #F2F7FA;
+border:none
+}
+
+QScrollArea QWidget#scrollAreaWidgetContents {
+    background-color: #F2F7FA;
+}
+
+QToolBar{
+background-color:#2E91DB;
+}
+QToolBar QToolButton {
+font-weight:bold;
+
+color:white;
+}
+
+
+QToolBar :hover {
+background-color:#0D80D6
+}
+
+QToolBar QToolButton:disabled {
+    color: #A0C8E8;      
+    font-weight: normal;  
+    background-color: transparent;
+}
+QPushButton{
+font-weight:bold;
+background-color:#2E91DB;
+color:white;
+border:1px solid #BBDEFB;
+border-radius:3px;
+padding: 6px 0px;
+}
+QPushButton:hover {
+    background-color: #0D80D6;
+}
+
+QPushButton:pressed {
+    background-color: #0A77C9;
+}
+
+QPushButton:disabled {
+    background-color: #E3F2FD;
+    color: #9E9E9E;
+    border: 1px solid #BBDEFB;
+}
+
+QLineEdit {
+    background-color: white;
+    border:1px solid #BBDEFB;
+    border-radius: 3px;
+    padding: 3px 8px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #2E91DB;
+}
+
+QLineEdit:read-only {
+    background-color: #E3F2FD;
+    color: #9E9E9E;
+	border: 1px solid #BBDEFB;
+ 	font-weight:bold;
+}
+
+QComboBox {
+    background-color: white;
+    border:1px solid #BBDEFB;
+    border-radius: 3px;
+    padding: 4px 8px;
+}
+QComboBox:focus {
+    border: 2px solid #2E91DB;
+}
+
+QTableView {
+    background-color: white;           
+    selection-background-color: #2E91DB;      
+    selection-color: white;                  
+    gridline-color: #BBDEFB; 
+	               
+    border: 1px solid #BBDEFB;                
+}
+
+QTableView::viewport {
+    background-color: white;
+}
+
+
+QHeaderView::section {
+    background-color: #E3F2FD;              
+    color: #1976D2;                           
+    padding: 4px 3px;
+    border: 1px solid #BBDEFB;  
+    font-weight: bold;
+   
+}
+
+
+
+QHeaderView::section:hover {
+    background-color: #BBDEFB;
+}
+
+QHeaderView::section:disabled {
+    background-color: #E3F2FD;
+    color: #A0A0A0;
+ 
+}
+
+
+
+QStackedWidget &gt; QWidget {
+    background-color: white;
+}
+
+QScrollBar:vertical {
+    background-color: #F5F5F5;
+    width: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #BBDEFB;
+    border-radius: 6px;
+    min-height: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #90CAF9;
+}
+
+QScrollBar::handle:vertical:pressed {
+    background-color: #2E91DB;
+}
+
+QScrollBar:horizontal {
+    background-color: #F5F5F5;
+    height: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #BBDEFB;
+    border-radius: 6px;
+    min-width: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #90CAF9;
+}
+
+QScrollBar::handle:horizontal:pressed {
+    background-color: #2E91DB;
+}
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical,
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    height: 0px;
+    width: 0px;
+}
+
+QScrollBar::corner {
+    background-color: #F5F5F5;
+}
+
+QMessageBox {
+    background-color:  #F2F7FA;
+    color: #333333;
+}
+
+
+
+QMessageBox QPushButton {
+    background-color: #2E91DB;
+    color: white;
+    border:1px solid #BBDEFB;
+    border-radius: 3px;
+    padding: 6px 10px;
+    font-weight: bold;
+   min-width:60px;
+   
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #2579B8;  
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: #1F6594;
+}</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="10" column="0" colspan="5">
+     <widget class="QStackedWidget" name="stackedWidget">
+      <property name="currentIndex">
+       <number>4</number>
+      </property>
+      <widget class="QWidget" name="page_4">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QWidget" name="page">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <layout class="QHBoxLayout" name="horizontalLayout"/>
+      </widget>
+      <widget class="QWidget" name="page_2">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QWidget" name="page_3">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+      <widget class="QWidget" name="page_5">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+      </widget>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QLineEdit" name="lineEdit_afm">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="1">
+     <widget class="NoWheelComboBox" name="combo_periferia">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_surname">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>ΕΠΩΝΥΜΟ</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_name">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>ΟΝΟΜΑ</string>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1">
+     <widget class="QLineEdit" name="lineEdit_surname">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="3">
+     <widget class="QPushButton" name="importbtn">
+      <property name="text">
+       <string>Εισαγωγή</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_afm">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>ΑΦΜ</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="3">
+     <widget class="QPushButton" name="exportbtn">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Εξαγωγή Excel</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="2">
+     <widget class="QPushButton" name="savebtn">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Αποθήκευση</string>
+      </property>
+     </widget>
+    </item>
+    <item row="9" column="0">
+     <widget class="QLabel" name="label_periferia">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>ΠΕΡΙΦΕΡΕΙΑ</string>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1">
+     <widget class="QLineEdit" name="lineEdit_name">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QPushButton" name="searchbtn">
+      <property name="maximumSize">
+       <size>
+        <width>150</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>Φόρτωση</string>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="4">
+     <widget class="QLabel" name="label_logo">
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="margin">
+       <number>0</number>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1046</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="arxiki"/>
+   <addaction name="separator"/>
+   <addaction name="ta"/>
+   <addaction name="separator"/>
+   <addaction name="mellontiki"/>
+   <addaction name="separator"/>
+   <addaction name="epileximotita"/>
+   <addaction name="separator"/>
+   <addaction name="moria"/>
+   <addaction name="separator"/>
+  </widget>
+  <action name="ta">
+   <property name="text">
+    <string>ΤΑ Αρχικής</string>
+   </property>
+  </action>
+  <action name="epileximotita">
+   <property name="text">
+    <string>Επιλεξιμότητα</string>
+   </property>
+  </action>
+  <action name="mellontiki">
+   <property name="text">
+    <string>ΤΑ Μελλοντικής</string>
+   </property>
+  </action>
+  <action name="arxiki">
+   <property name="text">
+    <string>Αρχική</string>
+   </property>
+  </action>
+  <action name="moria">
+   <property name="text">
+    <string>Μοριοδότηση</string>
+   </property>
+  </action>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>NoWheelComboBox</class>
+   <extends>QComboBox</extends>
+   <header>delegates.delegates_dlt</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

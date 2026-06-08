@@ -1,0 +1,29 @@
+# Αγνοούμε μόνο τα αρχεία της βάσης δεδομένων
+*.db
+data/*.db
+
+# ΔΕΝ αγνοούμε τα Excel (έτσι το Git θα συνεχίσει να βλέπει το αρχείο του συναδέλφου)
+
+__pycache__/
+*.pyc
+
+
+# PyInstaller (Executable)
+build/
+dist/
+*.spec
+
+
+# Environment and IDE
+.vscode/
+venv/
+.env
+
+# claude files
+.claude/
+
+#Βοηθητικά αρχεία
+infos/
+
+# Inno Setup output (παραγόμενο installer)
+installer/output/
