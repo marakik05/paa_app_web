@@ -21,19 +21,23 @@
     </header>
     <main>
         
+        
         <form id="personal-info">
             <fieldset>
 
                 <label for="AFM">ΑΦΜ: </label>
                 <input type="text"
                        name="AFM"
-                       id="AFM" />
-                 </label>
+                       id="AFM" 
+                        inputmode="numeric"
+                        maxlength="9"
+                        autocomplete="off"/>
+                
                  <label for="name">Όνομα: </label>
                 <input type="text"
                        name="name"
                        id="name" />
-                </label><label for="surname">Επώνυμο: </label>
+                <label for="surname">Επώνυμο: </label>
                 <input type="text"
                        name="surname"
                        id="surname" />
@@ -41,6 +45,56 @@
                 <select id="district" name="district" required>
                     <!-- Θα γεμίσει δυναμικά από το /api/regions -->
                 </select>
-        </form>">
+                <button type="button" id="load">Φόρτωση</button>
+                <button type="button" id="import">Εισαγωγή</button>
+                <button type="button" id="save">Αποθήκευση</button>
+                <button type="button" id="export">Εξαγωγή Excel</button>
+                
+            </fieldset>
+
+        </form>
+        <section data-page-container="arxiki">
+            <h2>Συγκεντρωτικός Πίνακας Εγγραφών</h2>
+            <fieldset>
+                <label for="search-afm">Αναζήτηση ΑΦΜ: </label>
+                <input type="text" id="search-afm" name="search-afm" inputmode="numeric" maxlength="9" autocomplete="off"/>
+                <button type="button" id="export-records">Εξαγωγή εγγραφών</button>
+            </fieldset>
+            <table id="records-table">
+                <thead>
+                    <tr>
+                        <th>ΑΦΜ</th>
+                        <th>Όνομα</th>
+                        <th>Επώνυμο</th>
+                        <th>Περιφέρεια</th>
+                        <th>Αρχική ΤΑ</th>
+                        <th>Μελλοντική ΤΑ</th>
+                        <th>Μόρια</th>
+                        <th>Επιλεξιμότητα</th>
+                        <th>Τελευταία Επεξεργασία</th>
+                        <th>Επεξεργασία</th>
+                        <th>Διαγραφή</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Θα γεμίσει δυναμικά με τις εγγραφές -->
+                </tbody>
+            </table>
+        </section>
+        <section data-page-container="ta" hidden>
+            <h2>Τυπική Απόδοση Αρχικης Κατάστασης</h2>
+        </section>
+        <section data-page-container="mellontiki" hidden>
+            <h2>Τυπική Απόδοση Μελλοντικής Κατάστασης</h2>
+        </section>
+        <section data-page-container="epileximotita" hidden>
+            <h2>Κριτήρια Επιλεξιμότητας Υποψηφίου</h2>
+        </section>
+        <section data-page-container="moria" hidden>
+            <h2>Κριτήρια Μοριοδότησης Υποψηφίου</h2>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    
 </body>
 </html>
