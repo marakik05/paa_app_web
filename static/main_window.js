@@ -90,4 +90,35 @@ document.addEventListener('DOMContentLoaded', () => {
         handleAfmChanged(afmInput.value);
     });
 
+    document.getElementById('load').addEventListener('click', () => {
+    const afm = document.getElementById('AFM').value.trim();
+    if (afm.length !== 9) { showToast('Ο ΑΦΜ πρέπει να είναι 9 ψηφία!'); return; }
+    loadProducer(afm);
+
+    });
+
+    document.getElementById('save').addEventListener('click', () => {
+    const afm = document.getElementById('AFM').value.trim();
+    if (afm.length !== 9) { showToast('Ο ΑΦΜ πρέπει να είναι 9 ψηφία!'); return; }
+
+    const payload = {
+        name:    document.getElementById('name').value.trim(),
+        surname: document.getElementById('surname').value.trim(),
+        region:  document.getElementById('district').value,
+        // initial_rows, future_rows, eligibility, moria: θα προστεθούν όταν υλοποιηθούν οι πίνακες
+    };
+
+    fetch(`/api/producer/${afm}/save`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            showToast('Επιτυχής αποθήκευση!', 'green');
+            loadProducersTable();
+        }
+    });
+});
 });
