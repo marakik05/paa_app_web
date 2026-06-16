@@ -107,6 +107,16 @@
                 <tbody>
                     <!-- Θα γεμίσει δυναμικά με τις εγγραφές -->
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="10">Σύνολα ΤΑ</td>
+                        <td id="total-ta">0.00</td>
+                        <td id="total-ta-sum">0.00</td>
+                        <td id="total-ta-plant">0.00</td>
+                        <td id="total-ta-animal">0.00</td>
+                        <td id="total-ta-bee-silk">0.00</td>
+                    </tr>
+                </tfoot>
             </table>
         </section>
         <section data-page-container="mellontiki" hidden>
@@ -121,6 +131,7 @@
     </main>
     <script src="{{ url_for('static', filename='main_window.js') }}"></script>
     <script src="{{ url_for('static', filename='section_arxiki.js') }}"></script>
+     <script src="{{ url_for('static', filename='section_ta.js') }}"></script>
     <script src="{{ url_for('static', filename='messages.js') }}"></script>
     
 </body>

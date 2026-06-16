@@ -1,0 +1,13 @@
+/* combobox styles */
+.combo-wrapper  { position: relative; width: 100%; }
+.combo-input    { width: 100%; box-sizing: border-box; }
+.combo-dropdown {
+    position: absolute; z-index: 1000;
+    background: white; border: 1px solid #ccc;
+    max-height: 3cqi; overflow-y: auto;
+    display: none; width: 100%; left: 0; top: 100%;
+}
+.combo-option       { padding: 4px 8px; cursor: pointer; }
+.combo-option:hover { background: #E3F2FD; }
+#ta-table td[data-col="0"],
+#ta-table td[data-col="1"] { min-width: 200px; }

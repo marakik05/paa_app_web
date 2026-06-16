@@ -1,6 +1,8 @@
 from flask import Flask, render_template, jsonify, request
-from utils.excel_loader import PERIFERIES
+
 from database_manager import fetch_producer, setup_database, fetch_all_producers, delete_producer
+from utils.excel_loader import load_excel_data, resource_path, PERIFERIES
+from utils.ta_calculations import calc_row, calc_totals, to_float, to_int
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
 setup_database()
@@ -8,6 +10,8 @@ setup_database()
 @app.route('/')
 def index():
     return render_template('index.html')
+
+#Main-Window
 
 #combo box περιφερειών
 @app.route('/api/regions')
@@ -55,6 +59,7 @@ def save_producer(afm):
         save_scenario_data(afm, 'future', body['future_rows'])
     return jsonify({'ok': True})
 
+#Section arxiki
 #λίστα παραγωγών
 @app.route('/api/producers')
 def get_producers():
@@ -66,5 +71,30 @@ def delete_producer_route(afm):
     ok = delete_producer(afm)
     return jsonify({'ok': ok})
 
+#Section arxiki-ta
+
+TA_MAPPING, TA_VALUE_MAPPING = load_excel_data(resource_path('data/ta.xlsx'))
+
+@app.route('/api/ta/reference')
+def ta_reference():
+    return jsonify({'mapping': TA_MAPPING})
+
+@app.route('/api/ta/recalculate', methods=['POST'])
+def ta_recalculate():
+    body = request.get_json()
+    region = body.get('region', '')
+    rows_calc = [
+        calc_row(
+            TA_VALUE_MAPPING, region,
+            r.get('category', ''), r.get('description', ''),
+            to_float(r.get('quantity')), to_int(r.get('trees_over_4')),
+            to_int(r.get('trees_under_4')), r.get('vine_over_3', '')
+        )
+        for r in body.get('rows', [])
+    ]
+    return jsonify({
+        'rows': [{k: r[k] for k in ('typical_output', 'output_per_choice', 'lock_ampeli', 'lock_trees')} for r in rows_calc],
+        'totals': calc_totals(rows_calc)
+    })
 if __name__ == '__main__':
     app.run(debug=True)
