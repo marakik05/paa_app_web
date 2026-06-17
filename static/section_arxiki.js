@@ -2,8 +2,9 @@
 function handleEditClick(afm) {
     const afmInput = document.getElementById('AFM');
     afmInput.value = afm;
-    handleAfmChanged(afm);   // ενημερώνει disabled state των save/export/import
-    loadProducer(afm);       // γεμίζει name/surname/district (βλ. refactor παρακάτω)
+
+    unlockTaSection();       // ενεργοποιεί αμέσως το nav link "ΤΑ Αρχικής" + όλο το section
+    loadProducer(afm);       // γεμίζει name/surname/district + τον πίνακα ΤΑ
 }
 
 //Συνάρτηση για το κουμπί διαγραφής παραγωγού
@@ -16,8 +17,10 @@ function handleDeleteClick(afm) {
             showToast('Ο παραγωγός διαγράφηκε.', 'green');
             loadProducersTable();
             if (document.getElementById('AFM').value === afm) {
-                clearForm();
-                handleAfmChanged('');
+                document.getElementById('AFM').value     = '';
+                document.getElementById('name').value    = '';
+                document.getElementById('surname').value = '';
+                lockTaSection();;
             }
         });
 }
@@ -31,7 +34,7 @@ function loadProducer(afm) {
             document.getElementById('name').value     = data.name;
             document.getElementById('surname').value  = data.surname;
             document.getElementById('district').value = data.region;
-            // TODO: γέμισμα πινάκων ΤΑ, eligibility, moria (επόμενες φάσεις)
+            loadTaTable(data.initial_rows || []);
             showToast('Τα δεδομένα φορτώθηκαν!', 'green');
         });
 }
@@ -49,18 +52,7 @@ function formatTimestamp(ts) {
     return `${d}/${m}/${y} ${hm}`;
 }
 
-function renderEligibility(val) {
-    const span = document.createElement('span');
-    span.textContent = val || '';
-    if (val === 'ΕΠΙΛΕΞΙΜΟΣ') {
-        span.style.color = '#2E7D32';
-        span.style.fontWeight = 'bold';
-    } else if (val === 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ') {
-        span.style.color = '#C62828';
-        span.style.fontWeight = 'bold';
-    }
-    return span;
-}
+
 
 // ─── Γέμισμα πίνακα συγκεντρωτικών εγγραφών (≈ load_producers) ───
 function loadProducersTable() {
@@ -71,8 +63,7 @@ function loadProducersTable() {
             tbody.innerHTML = '';
 
             rows.forEach(row => {
-                const [afm, firstName, lastName, moriaVal, region,
-                       initialTa, futureTa, eligibility, lastModified] = row;
+                const [afm, firstName, lastName, region, initialTa, lastModified] = row;
 
                 const tr = document.createElement('tr');
                 tr.dataset.afm = afm;
@@ -83,8 +74,7 @@ function loadProducersTable() {
                     lastName,
                     region,
                     formatNumber(initialTa),
-                    formatNumber(futureTa),
-                    formatNumber(moriaVal),
+                    
                 ];
                 cells.forEach(value => {
                     const td = document.createElement('td');
@@ -92,10 +82,7 @@ function loadProducersTable() {
                     tr.appendChild(td);
                 });
 
-                // Επιλεξιμότητα (χρωματισμένο span)
-                const eligTd = document.createElement('td');
-                eligTd.appendChild(renderEligibility(eligibility));
-                tr.appendChild(eligTd);
+             
 
                 // Τελευταία Επεξεργασία
                 const tsTd = document.createElement('td');
@@ -109,6 +96,8 @@ function loadProducersTable() {
                 editBtn.className = 'edit-btn';
                 editBtn.textContent = 'Επεξεργασία';
                 editBtn.dataset.afm = afm;
+                
+               
                 editTd.appendChild(editBtn);
                 tr.appendChild(editTd);
 

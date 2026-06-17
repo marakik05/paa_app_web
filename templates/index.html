@@ -13,9 +13,7 @@
         <nav class="navbar">
             <a href="#" data-page="arxiki">Αρχική</a>
             <a href="#" data-page="ta">ΤΑ Αρχικής</a>
-            <a href="#" data-page="mellontiki">ΤΑ Μελλοντικής</a>
-            <a href="#" data-page="epileximotita">Επιλεξιμότητα</a>
-            <a href="#" data-page="moria">Μοριοδότηση</a>
+            
 
         </nav>
     </header>
@@ -29,23 +27,24 @@
                 <input type="text"
                        name="AFM"
                        id="AFM" 
-                        inputmode="numeric"
-                        maxlength="9"
-                        autocomplete="off"/>
+                        readonly/>
                 
                  <label for="name">Όνομα: </label>
                 <input type="text"
                        name="name"
-                       id="name" />
+                       id="name" 
+                        />
                 <label for="surname">Επώνυμο: </label>
                 <input type="text"
                        name="surname"
-                       id="surname" />
+                       id="surname" 
+                        />
                  <label for="district">Περιφέρεια: </label>
                 <select id="district" name="district" required>
                     <!-- Θα γεμίσει δυναμικά από το /api/regions -->
                 </select>
-                <button type="button" id="load">Φόρτωση</button>
+                <button type="button" id="new-record">Νέα Εγγραφή</button>
+               
                 <button type="button" id="import">Εισαγωγή</button>
                 <button type="button" id="save">Αποθήκευση</button>
                 <button type="button" id="export">Εξαγωγή Excel</button>
@@ -58,6 +57,7 @@
             <fieldset>
                 <label for="search-afm">Αναζήτηση ΑΦΜ: </label>
                 <input type="text" id="search-afm" name="search-afm" inputmode="numeric" maxlength="9" autocomplete="off"/>
+                
                 <button type="button" id="export-records">Εξαγωγή εγγραφών</button>
             </fieldset>
             <table id="records-table">
@@ -68,9 +68,7 @@
                         <th>Επώνυμο</th>
                         <th>Περιφέρεια</th>
                         <th>Αρχική ΤΑ</th>
-                        <th>Μελλοντική ΤΑ</th>
-                        <th>Μόρια</th>
-                        <th>Επιλεξιμότητα</th>
+                       
                         <th>Τελευταία Επεξεργασία</th>
                         <th>Επεξεργασία</th>
                         <th>Διαγραφή</th>
@@ -83,6 +81,7 @@
         </section>
         <section data-page-container="ta" hidden>
             <h2>Τυπική Απόδοση Αρχικης Κατάστασης</h2>
+            <fieldset id="ta-fieldset">
             <button type="button" id="add-row">Προσθήκη</button>
             <table id="ta-table">
                 <thead>
@@ -118,16 +117,30 @@
                     </tr>
                 </tfoot>
             </table>
+            </fieldset>
         </section>
-        <section data-page-container="mellontiki" hidden>
-            <h2>Τυπική Απόδοση Μελλοντικής Κατάστασης</h2>
-        </section>
-        <section data-page-container="epileximotita" hidden>
-            <h2>Κριτήρια Επιλεξιμότητας Υποψηφίου</h2>
-        </section>
-        <section data-page-container="moria" hidden>
-            <h2>Κριτήρια Μοριοδότησης Υποψηφίου</h2>
-        </section>
+
+        <div id="modal-new-record" style="display:none">
+    <div class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Νέα Εγγραφή</h3>
+                <button type="button" id="modal-close" class="modal-close-btn">&#x2715;</button>
+            </div>
+            <label for="modal-afm">ΑΦΜ:</label>
+            <input type="text" id="modal-afm" maxlength="9" inputmode="numeric" autocomplete="off">
+            <label for="modal-name">Όνομα:</label>
+            <input type="text" id="modal-name" autocomplete="off">
+            <label for="modal-surname">Επώνυμο:</label>
+            <input type="text" id="modal-surname" autocomplete="off">
+            <div class="modal-actions">
+                <button type="button" id="modal-save">Αποθήκευση</button>
+                <button type="button" id="modal-cancel">Ακύρωση</button>
+            </div>
+        </div>
+    </div>
+</div>
+      
     </main>
     <script src="{{ url_for('static', filename='main_window.js') }}"></script>
     <script src="{{ url_for('static', filename='section_arxiki.js') }}"></script>

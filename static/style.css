@@ -1,3 +1,26 @@
+/* modal styles */
+.modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 2000;
+}
+.modal-box {
+    background: white; border-radius: 6px;
+    padding: 24px 28px; min-width: 320px;
+    display: flex; flex-direction: column; gap: 8px;
+}
+.modal-actions  { display: flex; gap: 8px; margin-top: 8px; justify-content: flex-end; }
+.modal-header   { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.modal-header h3 { margin: 0; }
+.modal-close-btn {
+    background: none; border: none; cursor: pointer;
+    font-size: 18px; line-height: 1; padding: 2px 6px;
+    color: #666;
+}
+.modal-close-btn:hover { color: #000; }
+
+
 /* combobox styles */
 .combo-wrapper  { position: relative; width: 100%; }
 .combo-input    { width: 100%; box-sizing: border-box; }
@@ -11,3 +34,10 @@
 .combo-option:hover { background: #E3F2FD; }
 #ta-table td[data-col="0"],
 #ta-table td[data-col="1"] { min-width: 200px; }
+
+/* TA section lock — disabled fieldset γκριζάρει & κλειδώνει όλο το section */
+#ta-fieldset { border: none; margin: 0; padding: 0; }
+#ta-fieldset:disabled { opacity: 0.5; }
+
+/* Κλειδωμένο nav link — δεν επιτρέπει μετάβαση στη σελίδα */
+.navbar a.nav-disabled { pointer-events: none; opacity: 0.5; cursor: default; }

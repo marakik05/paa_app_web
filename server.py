@@ -25,38 +25,29 @@ def producer_exists(afm):
 #κουμπί φόρτωσης
 @app.route('/api/producer/<afm>/full')
 def get_producer_full(afm):
-    from database_manager import fetch_producer, fetch_entries, fetch_eligibility, fetch_moria
+    from database_manager import fetch_producer, fetch_entries
     producer = fetch_producer(afm)
     if not producer:
         return jsonify({'found': False})
     initial = fetch_entries(afm, 'initial')
-    future  = fetch_entries(afm, 'future')
-    elig    = fetch_eligibility(afm)
-    moria   = fetch_moria(afm)
     return jsonify({
         'found': True,
         'name': producer[0], 'surname': producer[1], 'region': producer[2],
         'initial_rows': [list(r) for r in initial],
-        'future_rows':  [list(r) for r in future],
-        'eligibility':  list(elig) if elig else None,
-        'moria':        list(moria) if moria else None
     })
 
 #save κουμπί
 @app.route('/api/producer/<afm>/save', methods=['POST'])
 def save_producer(afm):
-    from database_manager import (save_producer_basics, save_eligibility_data,
-                                   save_moria_data, save_scenario_data)
+    from database_manager import (save_producer_basics, save_scenario_data)
+                                  
     body = request.get_json()
     save_producer_basics(afm, body['name'], body['surname'], body['region'])
-    if body.get('eligibility'):
-        save_eligibility_data(afm, tuple(body['eligibility']))
-    if body.get('moria'):
-        save_moria_data(afm, tuple(body['moria']))
+
     if body.get('initial_rows') is not None:
-        save_scenario_data(afm, 'initial', body['initial_rows'])
-    if body.get('future_rows') is not None:
-        save_scenario_data(afm, 'future', body['future_rows'])
+        rows = [[afm, 'initial'] + list(r) for r in body['initial_rows']]
+        save_scenario_data(afm, 'initial', rows)
+  
     return jsonify({'ok': True})
 
 #Section arxiki

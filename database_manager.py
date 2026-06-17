@@ -121,28 +121,28 @@ def setup_database():
         )
     ''')
 
-    # 3. Πίνακας Επιλεξιμότητας
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS eligibility (
-            producer_afm TEXT PRIMARY KEY,
-            q1 INTEGER, q2 TEXT, q3 TEXT, q4 TEXT, q5 TEXT, q6 TEXT, q7 TEXT, q8 TEXT, q9 TEXT,
-            typical_output_val REAL,
-            eligibility_result TEXT,
-            FOREIGN KEY (producer_afm) REFERENCES producers (afm) ON DELETE CASCADE
-        )
-    ''')
+    # # 3. Πίνακας Επιλεξιμότητας
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS eligibility (
+    #         producer_afm TEXT PRIMARY KEY,
+    #         q1 INTEGER, q2 TEXT, q3 TEXT, q4 TEXT, q5 TEXT, q6 TEXT, q7 TEXT, q8 TEXT, q9 TEXT,
+    #         typical_output_val REAL,
+    #         eligibility_result TEXT,
+    #         FOREIGN KEY (producer_afm) REFERENCES producers (afm) ON DELETE CASCADE
+    #     )
+    # ''')
 
-    # 3. Πίνακας Μοριοδότησης
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS moria (
-            producer_afm TEXT PRIMARY KEY,
-            q1_1 TEXT, q1_2 TEXT, q2_1 REAL, q2_2 REAL, q3_1_1 REAL, q3_1_2 TEXT, q3_1_3 TEXT, q3_1_4 TEXT, q3_2 TEXT, q3_3 TEXT, q3_4 TEXT, q3_5 TEXT, q4_1 REAL, q5_1 REAL, q6_1 TEXT, q7_1 TEXT,
-            budget_val REAL,
-            moria_val REAL,
-            moria_epileximos TEXT,
-            FOREIGN KEY (producer_afm) REFERENCES producers (afm) ON DELETE CASCADE
-        )
-    ''')
+    # # 3. Πίνακας Μοριοδότησης
+    # cursor.execute('''
+    #     CREATE TABLE IF NOT EXISTS moria (
+    #         producer_afm TEXT PRIMARY KEY,
+    #         q1_1 TEXT, q1_2 TEXT, q2_1 REAL, q2_2 REAL, q3_1_1 REAL, q3_1_2 TEXT, q3_1_3 TEXT, q3_1_4 TEXT, q3_2 TEXT, q3_3 TEXT, q3_4 TEXT, q3_5 TEXT, q4_1 REAL, q5_1 REAL, q6_1 TEXT, q7_1 TEXT,
+    #         budget_val REAL,
+    #         moria_val REAL,
+    #         moria_epileximos TEXT,
+    #         FOREIGN KEY (producer_afm) REFERENCES producers (afm) ON DELETE CASCADE
+    #     )
+    # ''')
 
     # Indexes για γρήγορα JOINs / lookups
     # (idempotent — CREATE INDEX IF NOT EXISTS)
@@ -211,35 +211,35 @@ def save_scenario_data(afm, scenario_type, table_data):
     conn.commit()
     conn.close()
 
-def save_eligibility_data(afm, data_tuple):
-    """Αποθηκεύει τις επιλογές της καρτέλας Επιλεξιμότητα."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA foreign_keys = ON;")
+# def save_eligibility_data(afm, data_tuple):
+#     """Αποθηκεύει τις επιλογές της καρτέλας Επιλεξιμότητα."""
+#     conn = sqlite3.connect(DB_PATH)
+#     cursor = conn.cursor()
+#     cursor.execute("PRAGMA foreign_keys = ON;")
     
-    cursor.execute('''
-        INSERT OR REPLACE INTO eligibility
-        (producer_afm, q1, q2, q3, q4, q5, q6, q7, q8, q9, typical_output_val, eligibility_result)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (afm, *data_tuple))
+#     cursor.execute('''
+#         INSERT OR REPLACE INTO eligibility
+#         (producer_afm, q1, q2, q3, q4, q5, q6, q7, q8, q9, typical_output_val, eligibility_result)
+#         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+#     ''', (afm, *data_tuple))
     
-    conn.commit()
-    conn.close()
+#     conn.commit()
+#     conn.close()
 
-def save_moria_data(afm, data_tuple):
-    """Αποθηκεύει τις επιλογές της καρτέλας Μοριοδότησης."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("PRAGMA foreign_keys = ON;")
+# def save_moria_data(afm, data_tuple):
+#     """Αποθηκεύει τις επιλογές της καρτέλας Μοριοδότησης."""
+#     conn = sqlite3.connect(DB_PATH)
+#     cursor = conn.cursor()
+#     cursor.execute("PRAGMA foreign_keys = ON;")
     
-    cursor.execute('''
-        INSERT OR REPLACE INTO moria
-        (producer_afm, q1_1, q1_2, q2_1, q2_2, q3_1_1, q3_1_2, q3_1_3, q3_1_4, q3_2, q3_3, q3_4, q3_5, q4_1, q5_1, q6_1, q7_1, budget_val, moria_val, moria_epileximos)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    ''', (afm, *data_tuple))
+#     cursor.execute('''
+#         INSERT OR REPLACE INTO moria
+#         (producer_afm, q1_1, q1_2, q2_1, q2_2, q3_1_1, q3_1_2, q3_1_3, q3_1_4, q3_2, q3_3, q3_4, q3_5, q4_1, q5_1, q6_1, q7_1, budget_val, moria_val, moria_epileximos)
+#         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+#     ''', (afm, *data_tuple))
     
-    conn.commit()
-    conn.close()
+#     conn.commit()
+#     conn.close()
 
 # --- ΣΥΝΑΡΤΗΣΕΙΣ ΑΝΑΚΤΗΣΗΣ (FETCH) ---
 
@@ -264,26 +264,14 @@ def fetch_all_producers():
             p.afm,
             p.first_name,
             p.last_name,
-            m.moria_val,
             NULLIF(p.region, '--Επιλέξτε'),
             oe.initial_ta,
-            oe.future_ta,
-            CASE
-                WHEN e.eligibility_result = 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ'
-                  OR m.moria_epileximos   = 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ' THEN 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ'
-                WHEN e.eligibility_result = 'ΕΠΙΛΕΞΙΜΟΣ'
-                 AND m.moria_epileximos   = 'ΕΠΙΛΕΞΙΜΟΣ'    THEN 'ΕΠΙΛΕΞΙΜΟΣ'
-                ELSE ''
-            END AS combined_eligibility,
             p.last_modified
         FROM producers p
-        LEFT JOIN moria m       ON m.producer_afm = p.afm
-        LEFT JOIN eligibility e ON e.producer_afm = p.afm
         LEFT JOIN (
             SELECT
                 producer_afm,
-                MAX(CASE WHEN scenario_type = 'initial' THEN total_output END) AS initial_ta,
-                MAX(CASE WHEN scenario_type = 'future'  THEN total_output END) AS future_ta
+                MAX(CASE WHEN scenario_type = 'initial' THEN total_output END) AS initial_ta
             FROM osde_entries
             GROUP BY producer_afm
         ) oe ON oe.producer_afm = p.afm
@@ -302,23 +290,11 @@ def fetch_single_producer_row(afm):
             p.afm,
             p.first_name,
             p.last_name,
-            m.moria_val,
             NULLIF(p.region, '--Επιλέξτε'),
-            (SELECT oe.total_output FROM osde_entries oe
-             WHERE oe.producer_afm = p.afm AND oe.scenario_type = 'initial' LIMIT 1),
-            (SELECT oe.total_output FROM osde_entries oe
-             WHERE oe.producer_afm = p.afm AND oe.scenario_type = 'future' LIMIT 1),
-            CASE
-                WHEN e.eligibility_result = 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ'
-                  OR m.moria_epileximos   = 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ' THEN 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ'
-                WHEN e.eligibility_result = 'ΕΠΙΛΕΞΙΜΟΣ'
-                 AND m.moria_epileximos   = 'ΕΠΙΛΕΞΙΜΟΣ'    THEN 'ΕΠΙΛΕΞΙΜΟΣ'
-                ELSE ''
-            END AS combined_eligibility,
+            (SELECT MAX(oe.total_output) FROM osde_entries oe
+             WHERE oe.producer_afm = p.afm AND oe.scenario_type = 'initial'),
             p.last_modified
         FROM producers p
-        LEFT JOIN moria m       ON m.producer_afm = p.afm
-        LEFT JOIN eligibility e ON e.producer_afm = p.afm
         WHERE p.afm = ?
     """, (afm,))
     result = cursor.fetchone()
@@ -335,23 +311,23 @@ def fetch_entries(afm, scenario_type):
     conn.close()
     return results
 
-def fetch_eligibility(afm):
-    """Επιστρέφει τα δεδομένα επιλεξιμότητας για το UI."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT q1, q2, q3, q4, q5, q6, q7, q8, q9, typical_output_val, eligibility_result FROM eligibility WHERE producer_afm = ?", (afm,))
-    result = cursor.fetchone()
-    conn.close()
-    return result
+# def fetch_eligibility(afm):
+#     """Επιστρέφει τα δεδομένα επιλεξιμότητας για το UI."""
+#     conn = sqlite3.connect(DB_PATH)
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT q1, q2, q3, q4, q5, q6, q7, q8, q9, typical_output_val, eligibility_result FROM eligibility WHERE producer_afm = ?", (afm,))
+#     result = cursor.fetchone()
+#     conn.close()
+#     return result
 
-def fetch_moria(afm):
-    """Επιστρέφει τα δεδομένα μοριοδότησης για το UI."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT q1_1, q1_2, q2_1, q2_2, q3_1_1, q3_1_2, q3_1_3, q3_1_4, q3_2, q3_3, q3_4, q3_5, q4_1, q5_1, q6_1, q7_1, budget_val, moria_val, moria_epileximos FROM moria WHERE producer_afm = ?", (afm,))
-    result = cursor.fetchone()
-    conn.close()
-    return result
+# def fetch_moria(afm):
+#     """Επιστρέφει τα δεδομένα μοριοδότησης για το UI."""
+#     conn = sqlite3.connect(DB_PATH)
+#     cursor = conn.cursor()
+#     cursor.execute("SELECT q1_1, q1_2, q2_1, q2_2, q3_1_1, q3_1_2, q3_1_3, q3_1_4, q3_2, q3_3, q3_4, q3_5, q4_1, q5_1, q6_1, q7_1, budget_val, moria_val, moria_epileximos FROM moria WHERE producer_afm = ?", (afm,))
+#     result = cursor.fetchone()
+#     conn.close()
+#     return result
 
 # --- ΣΥΝΑΡΤΗΣΗ ΔΙΑΓΡΑΦΗΣ (DELETE) ---
 
@@ -371,140 +347,140 @@ def delete_producer(afm):
         conn.close()
 
 
-def import_producers_batch_transaction(producers_data, progress_callback=None):
-    """
-    Import με mini-transactions PER AFM.
-    Επιστρέφει detailed results.
+# def import_producers_batch_transaction(producers_data, progress_callback=None):
+#     """
+#     Import με mini-transactions PER AFM.
+#     Επιστρέφει detailed results.
     
-    Returns:
-        dict: {
-            'success': [afm1, afm2, ...],
-            'failed': [(afm, error), ...],
-            'replace': int,
-            'total_success': int,
-            'total_failed': int
-        }
-    """
-    conn = sqlite3.connect(DB_PATH)
-    try:
-        cursor = conn.cursor()
+#     Returns:
+#         dict: {
+#             'success': [afm1, afm2, ...],
+#             'failed': [(afm, error), ...],
+#             'replace': int,
+#             'total_success': int,
+#             'total_failed': int
+#         }
+#     """
+#     conn = sqlite3.connect(DB_PATH)
+#     try:
+#         cursor = conn.cursor()
 
-        success_afms = []
-        failed_afms = []
-        replace_afms=[]
+#         success_afms = []
+#         failed_afms = []
+#         replace_afms=[]
 
-        cursor.execute("PRAGMA foreign_keys = ON;")
+#         cursor.execute("PRAGMA foreign_keys = ON;")
 
-        total = len(producers_data)
+#         total = len(producers_data)
 
-        for idx, data in enumerate(producers_data):
-            # Progress callback
-            if progress_callback:
-                progress_callback(idx, total)
+#         for idx, data in enumerate(producers_data):
+#             # Progress callback
+#             if progress_callback:
+#                 progress_callback(idx, total)
 
-            afm = data['afm']
+#             afm = data['afm']
 
-            try:
-                #  Mini-transaction PER AFM
-                cursor.execute("BEGIN TRANSACTION")
+#             try:
+#                 #  Mini-transaction PER AFM
+#                 cursor.execute("BEGIN TRANSACTION")
 
-                name = data.get('name', '')
-                surname = data.get('surname', '')
-                region = data.get('region', '--Επιλέξτε')
-                ts = _now_iso()
+#                 name = data.get('name', '')
+#                 surname = data.get('surname', '')
+#                 region = data.get('region', '--Επιλέξτε')
+#                 ts = _now_iso()
 
-                # Delete if replace
-                if data.get('_replace'):
+#                 # Delete if replace
+#                 if data.get('_replace'):
 
 
 
-                    delete_producer_entries(cursor,afm,scenario_type='initial')
-                    cursor.execute(
-                        "UPDATE moria SET moria_val = NULL, moria_epileximos = NULL WHERE producer_afm = ?",
-                        (afm,)
-                    )
-                    cursor.execute(
-                        "UPDATE eligibility SET eligibility_result = NULL WHERE producer_afm = ?",
-                        (afm,)
-                    )
-                    cursor.execute(
-                        "UPDATE osde_entries SET total_output = NULL "
-                        "WHERE producer_afm = ? AND scenario_type = 'future'",
-                        (afm,)
-                    )
-                    cursor.execute(
-                        "UPDATE producers SET last_modified = ? WHERE afm = ?",
-                        (ts, afm)
-                    )
-                    replace_afms.append(afm)
+#                     delete_producer_entries(cursor,afm,scenario_type='initial')
+#                     cursor.execute(
+#                         "UPDATE moria SET moria_val = NULL, moria_epileximos = NULL WHERE producer_afm = ?",
+#                         (afm,)
+#                     )
+#                     cursor.execute(
+#                         "UPDATE eligibility SET eligibility_result = NULL WHERE producer_afm = ?",
+#                         (afm,)
+#                     )
+#                     cursor.execute(
+#                         "UPDATE osde_entries SET total_output = NULL "
+#                         "WHERE producer_afm = ? AND scenario_type = 'future'",
+#                         (afm,)
+#                     )
+#                     cursor.execute(
+#                         "UPDATE producers SET last_modified = ? WHERE afm = ?",
+#                         (ts, afm)
+#                     )
+#                     replace_afms.append(afm)
 
-                else:
-                    # ← Προσθήκη: Εισαγωγή νέου παραγωγού
-                    cursor.execute('''
-                        INSERT INTO producers (afm, first_name, last_name, region, last_modified)
-                        VALUES (?, ?, ?, ?, ?)
-                    ''', (afm, name, surname, region, ts))
+#                 else:
+#                     # ← Προσθήκη: Εισαγωγή νέου παραγωγού
+#                     cursor.execute('''
+#                         INSERT INTO producers (afm, first_name, last_name, region, last_modified)
+#                         VALUES (?, ?, ?, ?, ?)
+#                     ''', (afm, name, surname, region, ts))
 
-                # Insert entries
-                for entry in data.get('rows', []):
-                    cursor.execute('''
-                        INSERT INTO osde_entries (
-                            producer_afm, scenario_type, category_osde, description,
-                            typical_output, quantity, certification, trees_over_4,
-                            trees_under_4, vine_over_3, output_per_choice, total_output,
-                            ta_productive, ta_plant, ta_animal, ta_bees
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                    ''', (
-                        afm, 'initial',
-                        entry.get('category_osde', ''),
-                        entry.get('description', ''),
-                        to_float_or_empty(entry.get('typical_output', '')),
-                        to_float_or_empty(entry.get('quantity', '')),
-                        entry.get('certification', ''),
-                        to_int_or_empty(entry.get('trees_over_4', '')),
-                        to_int_or_empty(entry.get('trees_under_4', '')),
-                        entry.get('vine_over_3', ''),
-                        to_float_or_empty(entry.get('output_per_choice', '')),
-                        to_float_or_empty(entry.get('total_output', '')),
-                        to_float_or_empty(entry.get('ta_productive', '')),
-                        to_float_or_empty(entry.get('ta_plant', '')),
-                        to_float_or_empty(entry.get('ta_animal', '')),
-                        to_float_or_empty(entry.get('ta_bees', ''))
-                    ))
+#                 # Insert entries
+#                 for entry in data.get('rows', []):
+#                     cursor.execute('''
+#                         INSERT INTO osde_entries (
+#                             producer_afm, scenario_type, category_osde, description,
+#                             typical_output, quantity, certification, trees_over_4,
+#                             trees_under_4, vine_over_3, output_per_choice, total_output,
+#                             ta_productive, ta_plant, ta_animal, ta_bees
+#                         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+#                     ''', (
+#                         afm, 'initial',
+#                         entry.get('category_osde', ''),
+#                         entry.get('description', ''),
+#                         to_float_or_empty(entry.get('typical_output', '')),
+#                         to_float_or_empty(entry.get('quantity', '')),
+#                         entry.get('certification', ''),
+#                         to_int_or_empty(entry.get('trees_over_4', '')),
+#                         to_int_or_empty(entry.get('trees_under_4', '')),
+#                         entry.get('vine_over_3', ''),
+#                         to_float_or_empty(entry.get('output_per_choice', '')),
+#                         to_float_or_empty(entry.get('total_output', '')),
+#                         to_float_or_empty(entry.get('ta_productive', '')),
+#                         to_float_or_empty(entry.get('ta_plant', '')),
+#                         to_float_or_empty(entry.get('ta_animal', '')),
+#                         to_float_or_empty(entry.get('ta_bees', ''))
+#                     ))
 
-                #  Commit ΜΟΝΟ αυτό το AFM
-                cursor.execute("COMMIT")
-                success_afms.append(afm)
+#                 #  Commit ΜΟΝΟ αυτό το AFM
+#                 cursor.execute("COMMIT")
+#                 success_afms.append(afm)
 
-            except Exception as e:
-                #  Rollback ΜΟΝΟ αυτό το AFM
-                cursor.execute("ROLLBACK")
+#             except Exception as e:
+#                 #  Rollback ΜΟΝΟ αυτό το AFM
+#                 cursor.execute("ROLLBACK")
 
-                # Simplify error message
-                error_msg = str(e)
-                if "UNIQUE constraint failed" in error_msg:
-                    error_msg = "Διπλή εγγραφή"
-                elif "NOT NULL constraint failed" in error_msg:
-                    error_msg = "Κενό απαιτούμενο πεδίο"
-                elif "FOREIGN KEY constraint failed" in error_msg:
-                    error_msg = "Πρόβλημα αναφοράς"
+#                 # Simplify error message
+#                 error_msg = str(e)
+#                 if "UNIQUE constraint failed" in error_msg:
+#                     error_msg = "Διπλή εγγραφή"
+#                 elif "NOT NULL constraint failed" in error_msg:
+#                     error_msg = "Κενό απαιτούμενο πεδίο"
+#                 elif "FOREIGN KEY constraint failed" in error_msg:
+#                     error_msg = "Πρόβλημα αναφοράς"
 
-                failed_afms.append((afm, error_msg))
+#                 failed_afms.append((afm, error_msg))
 
-        # Final progress
-        if progress_callback:
-            progress_callback(total, total)
+#         # Final progress
+#         if progress_callback:
+#             progress_callback(total, total)
 
-        #  Return detailed results
-        return {
-            'success': success_afms,
-            'failed': failed_afms,
-            'replace':len(replace_afms),
-            'total_success': len(success_afms),
-            'total_failed': len(failed_afms)
-        }
-    finally:
-        conn.close()
+#         #  Return detailed results
+#         return {
+#             'success': success_afms,
+#             'failed': failed_afms,
+#             'replace':len(replace_afms),
+#             'total_success': len(success_afms),
+#             'total_failed': len(failed_afms)
+#         }
+#     finally:
+#         conn.close()
 
 
 def to_float_or_empty(value):

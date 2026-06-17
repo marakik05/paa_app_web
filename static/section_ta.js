@@ -291,4 +291,80 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. αλλαγή περιφέρειας → επανυπολογισμός ΤΑ (aegean vs default)
     document.getElementById('district').addEventListener('change', recalcAll);
+
+    // 5. κλείδωμα section ΤΑ αρχικά — ξεκλειδώνει μόνο με "Επεξεργασία"
+    lockTaSection();
 });
+
+// Κλειδώνει ΟΛΟ το section (disabled fieldset + nav link) + καθαρίζει δεδομένα
+function lockTaSection() {
+    document.getElementById('ta-fieldset').disabled = true;
+    document.querySelector('.navbar a[data-page="ta"]').classList.add('nav-disabled');
+    document.querySelector('#ta-table tbody').innerHTML = '';
+    ['total-ta','total-ta-sum','total-ta-plant','total-ta-animal','total-ta-bee-silk']
+        .forEach(id => { document.getElementById(id).textContent = ''; });
+
+    // αν ο χρήστης βρίσκεται στη σελίδα ΤΑ → επιστροφή στην Αρχική
+    const taPage = document.querySelector('[data-page-container="ta"]');
+    if (taPage && !taPage.hidden) {
+        document.querySelector('.navbar a[data-page="arxiki"]').click();
+    }
+}
+
+// Ξεκλειδώνει το section + nav link (μετά από "Επεξεργασία")
+function unlockTaSection() {
+    document.getElementById('ta-fieldset').disabled = false;
+    document.querySelector('.navbar a[data-page="ta"]').classList.remove('nav-disabled');
+}
+
+// Διαβάζει τις γραμμές του πίνακα → 14-element arrays για αποθήκευση
+function getTaRows() {
+    const rows = Array.from(document.querySelectorAll('#ta-table tbody tr'));
+    if (rows.length === 0) return [];
+    const total_output  = parseFloat(document.getElementById('total-ta').textContent) || null;
+    const ta_productive = parseFloat(document.getElementById('total-ta-sum').textContent) || null;
+    const ta_plant      = parseFloat(document.getElementById('total-ta-plant').textContent) || null;
+    const ta_animal     = parseFloat(document.getElementById('total-ta-animal').textContent) || null;
+    const ta_bees       = parseFloat(document.getElementById('total-ta-bee-silk').textContent) || null;
+
+    return rows.map(tr => {
+        const cells = tr.querySelectorAll('td');
+        return [
+            cells[0].querySelector('.combo-input').value,
+            cells[1].querySelector('.combo-input').value,
+            parseFloat(cells[2].textContent) || null,
+            parseFloat(cells[3].querySelector('input').value) || null,
+            cells[4].querySelector('select').value,
+            parseInt(cells[5].querySelector('input').value, 10) || null,
+            parseInt(cells[6].querySelector('input').value, 10) || null,
+            cells[7].querySelector('select').value,
+            parseFloat(cells[8].textContent) || null,
+            total_output, ta_productive, ta_plant, ta_animal, ta_bees
+        ];
+    });
+}
+
+// Γεμίζει τον πίνακα από DB rows (17-element arrays από fetch_entries)
+function loadTaTable(rows) {
+    const tbody = document.querySelector('#ta-table tbody');
+    tbody.innerHTML = '';
+    rows.forEach(r => {
+        const tr = buildTaRow();
+        const cells = tr.querySelectorAll('td');
+        const cat  = r[3] || '';
+        const desc = r[4] || '--Επιλέξτε';
+        cells[0].querySelector('.combo-input').value = cat;
+        const descs = taMapping[cat] || [];
+        cells[1].innerHTML = '';
+        cells[1].appendChild(buildSearchableCombo(['--Επιλέξτε', ...descs], desc));
+        cells[3].querySelector('input').value  = r[6] != null ? String(r[6]) : '';
+        cells[4].querySelector('select').value = r[7] || '--Επιλέξτε';
+        cells[5].querySelector('input').value  = r[8] != null ? String(r[8]) : '';
+        cells[6].querySelector('input').value  = r[9] != null ? String(r[9]) : '';
+        cells[7].querySelector('select').value = r[10] || '--Επιλέξτε';
+        tbody.appendChild(tr);
+    });
+    recalcAll();
+}
+
+
