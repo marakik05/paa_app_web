@@ -428,7 +428,7 @@ tbody td {
 #ta-table td[data-col="2"],
 #ta-table td[data-col="8"] {
     background: var(--green-50);
-    text-align: right;
+    text-align: center;
     font-weight: 500;
     color: var(--green-800);
     font-family: var(--font);
@@ -464,12 +464,12 @@ tbody td {
     font-size: 13px;
     padding: 9px 10px;
     border: 1px solid var(--green-900);
-    text-align:right;
+    text-align: center;
     font-family: var(--font);
 }
 
 #ta-table tfoot td:first-child {
-    text-align: left;
+    text-align: right;
     font-family: var(--font);
     letter-spacing: 0.02em;
 }
@@ -567,6 +567,12 @@ tbody td {
     left: 0;
     top: 100%;
     box-shadow: 0 4px 10px rgba(0,0,0,0.13);
+}
+
+.combo-dropdown-portal {
+    position: absolute;
+    z-index: 9999;
+    max-height: 260px;
 }
 
 .combo-option {

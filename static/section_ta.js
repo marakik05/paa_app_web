@@ -203,8 +203,17 @@ function buildSearchableCombo(options, initialValue) {
     input.title = input.value;
     input.autocomplete = 'off';
 
+    // portal: το dropdown ζει στο body ώστε να μην κόβεται από τον πίνακα
     const dropdown = document.createElement('div');
-    dropdown.className = 'combo-dropdown';
+    dropdown.className = 'combo-dropdown combo-dropdown-portal';
+    document.body.appendChild(dropdown);
+
+    function positionDropdown() {
+        const rect = input.getBoundingClientRect();
+        dropdown.style.top   = (rect.bottom + window.scrollY) + 'px';
+        dropdown.style.left  = (rect.left   + window.scrollX) + 'px';
+        dropdown.style.width = rect.width + 'px';
+    }
 
     function renderOptions(filter) {
         dropdown.innerHTML = '';
@@ -221,8 +230,19 @@ function buildSearchableCombo(options, initialValue) {
             });
             dropdown.appendChild(item);
         });
-        dropdown.style.display = dropdown.children.length ? 'block' : 'none';
+        if (dropdown.children.length) {
+            positionDropdown();
+            dropdown.style.display = 'block';
+        } else {
+            dropdown.style.display = 'none';
+        }
     }
+
+    // επανατοποθέτηση αν ο χρήστης κάνει scroll ενώ το dropdown είναι ανοιχτό
+    function onScroll() {
+        if (dropdown.style.display === 'block') positionDropdown();
+    }
+    window.addEventListener('scroll', onScroll, true);
 
     input.addEventListener('change', () => { input.title = input.value; });
     input.addEventListener('focus', () => renderOptions(input.value));
@@ -256,7 +276,6 @@ function buildSearchableCombo(options, initialValue) {
 
     wrapper.appendChild(input);
     wrapper.appendChild(arrow);
-    wrapper.appendChild(dropdown);
     return wrapper;
 }
 
