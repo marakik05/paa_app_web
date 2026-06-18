@@ -1,10 +1,18 @@
+let _allProducers = [];
+
 //Συνάρτηση για το κουμπί επεξεργασίας παραγωγού
 function handleEditClick(afm) {
-    const afmInput = document.getElementById('AFM');
-    afmInput.value = afm;
+    document.getElementById('AFM').value = afm;
 
-    unlockTaSection();       // ενεργοποιεί αμέσως το nav link "ΤΑ Αρχικής" + όλο το section
-    loadProducer(afm);       // γεμίζει name/surname/district + τον πίνακα ΤΑ
+    unlockTaSection();  // πρώτα ξεκλειδώνει το nav link "ΤΑ Αρχικής"
+    document.querySelector('.navbar a[data-page="ta"]').click();  // μεταφορά στο section ΤΑ
+
+    // καθαρισμός φίλτρων — ο χρήστης θα το αντιληφθεί όταν επιστρέψει στην Αρχική
+    document.getElementById('search-afm').value     = '';
+    document.getElementById('search-surname').value = '';
+    _renderTable();
+
+    loadProducer(afm);  // γεμίζει name/surname/district + τον πίνακα ΤΑ
 }
 
 //Συνάρτηση για το κουμπί διαγραφής παραγωγού
@@ -25,7 +33,7 @@ function handleDeleteClick(afm) {
         });
 }
 
-// Σύνάρτηση φόρτωσης δεδομένων παραγωγού στην φόρμα 
+// Σύνάρτηση φόρτωσης δεδομένων παραγωγού στην φόρμα
 function loadProducer(afm) {
     fetch(`/api/producer/${afm}/full`)
         .then(r => r.json())
@@ -52,89 +60,92 @@ function formatTimestamp(ts) {
     return `${d}/${m}/${y} ${hm}`;
 }
 
+// ─── Απόδοση φιλτραρισμένων γραμμών στον πίνακα ───
+function _renderTable() {
+    const afmQ  = (document.getElementById('search-afm').value     || '').trim();
+    const surnQ = (document.getElementById('search-surname').value  || '').trim().toLowerCase();
+    const tbody = document.querySelector('#records-table tbody');
+    tbody.innerHTML = '';
 
+    _allProducers
+        .filter(row => {
+            const afm     = (row[0] || '');
+            const surname = (row[2] || '').toLowerCase();
+            return afm.includes(afmQ) && surname.includes(surnQ);
+        })
+        .forEach(row => {
+            const [afm, firstName, lastName, region, initialTa, lastModified] = row;
+
+            const tr = document.createElement('tr');
+            tr.dataset.afm = afm;
+
+            const cells = [afm, firstName, lastName, region, formatNumber(initialTa)];
+            cells.forEach(value => {
+                const td = document.createElement('td');
+                td.textContent = value || '';
+                tr.appendChild(td);
+            });
+
+            // Τελευταία Επεξεργασία
+            const tsTd = document.createElement('td');
+            tsTd.textContent = formatTimestamp(lastModified);
+            tr.appendChild(tsTd);
+
+            // Επεξεργασία
+            const editTd = document.createElement('td');
+            const editBtn = document.createElement('button');
+            editBtn.type = 'button';
+            editBtn.className = 'edit-btn';
+            editBtn.textContent = 'Επεξεργασία';
+            editBtn.dataset.afm = afm;
+            editTd.appendChild(editBtn);
+            tr.appendChild(editTd);
+
+            // Διαγραφή
+            const deleteTd = document.createElement('td');
+            const deleteBtn = document.createElement('button');
+            deleteBtn.type = 'button';
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.textContent = 'Διαγραφή';
+            deleteBtn.dataset.afm = afm;
+            deleteTd.appendChild(deleteBtn);
+            tr.appendChild(deleteTd);
+
+            tbody.appendChild(tr);
+        });
+}
 
 // ─── Γέμισμα πίνακα συγκεντρωτικών εγγραφών (≈ load_producers) ───
 function loadProducersTable() {
     fetch('/api/producers')
         .then(r => r.json())
         .then(rows => {
-            const tbody = document.querySelector('#records-table tbody');
-            tbody.innerHTML = '';
-
-            rows.forEach(row => {
-                const [afm, firstName, lastName, region, initialTa, lastModified] = row;
-
-                const tr = document.createElement('tr');
-                tr.dataset.afm = afm;
-
-                const cells = [
-                    afm,
-                    firstName,
-                    lastName,
-                    region,
-                    formatNumber(initialTa),
-                    
-                ];
-                cells.forEach(value => {
-                    const td = document.createElement('td');
-                    td.textContent = value || '';
-                    tr.appendChild(td);
-                });
-
-             
-
-                // Τελευταία Επεξεργασία
-                const tsTd = document.createElement('td');
-                tsTd.textContent = formatTimestamp(lastModified);
-                tr.appendChild(tsTd);
-
-                // Επεξεργασία
-                const editTd = document.createElement('td');
-                const editBtn = document.createElement('button');
-                editBtn.type = 'button';
-                editBtn.className = 'edit-btn';
-                editBtn.textContent = 'Επεξεργασία';
-                editBtn.dataset.afm = afm;
-                
-               
-                editTd.appendChild(editBtn);
-                tr.appendChild(editTd);
-
-                // Διαγραφή
-                const deleteTd = document.createElement('td');
-                const deleteBtn = document.createElement('button');
-                deleteBtn.type = 'button';
-                deleteBtn.className = 'delete-btn';
-                deleteBtn.textContent = 'Διαγραφή';
-                deleteBtn.dataset.afm = afm;
-                deleteTd.appendChild(deleteBtn);
-                tr.appendChild(deleteTd);
-
-                tbody.appendChild(tr);
-            });
+            _allProducers = rows;
+            _renderTable();
         });
 }
 
-
-// Λογική για την Αρχική Σελίδα (διαχείριση φόρμας αναζήτησης ΑΦΜ και εμφάνιση αποτελεσμάτων)
+// Λογική για την Αρχική Σελίδα
 document.addEventListener('DOMContentLoaded', () => {
-    const afmSearch = document.getElementById('search-afm');
+    const afmSearch  = document.getElementById('search-afm');
+    const surnSearch = document.getElementById('search-surname');
 
     afmSearch.addEventListener('input', () => {
-        // Κρατάει ΜΟΝΟ ψηφία, μέχρι 9 χαρακτήρες — ίδια λογική με \d{0,9}
         afmSearch.value = afmSearch.value.replace(/\D/g, '').slice(0, 9);
-
+        _renderTable();
     });
-    //προσθήκη ΑΦΜ στον πίνακα της αρχικής σελίδας
+
+    surnSearch.addEventListener('input', _renderTable);
+
+    // event delegation για edit/delete buttons
     const tbody = document.querySelector('#records-table tbody');
     tbody.addEventListener('click', (e) => {
-    const afm = e.target.dataset.afm;
-    if (!afm) return;
-    if (e.target.classList.contains('edit-btn'))   handleEditClick(afm);
-    if (e.target.classList.contains('delete-btn')) handleDeleteClick(afm);
+        const afm = e.target.dataset.afm;
+        if (!afm) return;
+        if (e.target.classList.contains('edit-btn'))   handleEditClick(afm);
+        if (e.target.classList.contains('delete-btn')) handleDeleteClick(afm);
     });
-        
+
     // Αρχικό γέμισμα πίνακα
     loadProducersTable();
 });

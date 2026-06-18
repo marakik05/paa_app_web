@@ -200,6 +200,7 @@ function buildSearchableCombo(options, initialValue) {
     input.type = 'text';
     input.className = 'combo-input';
     input.value = initialValue || options[0] || '';
+    input.title = input.value;
     input.autocomplete = 'off';
 
     const dropdown = document.createElement('div');
@@ -223,6 +224,7 @@ function buildSearchableCombo(options, initialValue) {
         dropdown.style.display = dropdown.children.length ? 'block' : 'none';
     }
 
+    input.addEventListener('change', () => { input.title = input.value; });
     input.addEventListener('focus', () => renderOptions(input.value));
     input.addEventListener('input', () => renderOptions(input.value));
     input.addEventListener('blur', () => {
