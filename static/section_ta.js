@@ -238,7 +238,22 @@ function buildSearchableCombo(options, initialValue) {
         if (e.key === 'Escape') { dropdown.style.display = 'none'; input.blur(); }
     });
 
+    const arrow = document.createElement('button');
+    arrow.type = 'button';
+    arrow.className = 'combo-arrow';
+    arrow.innerHTML = '&#9660;';
+    arrow.addEventListener('mousedown', e => {
+        e.preventDefault(); // αποτρέπει blur στο input
+        if (dropdown.style.display === 'block') {
+            dropdown.style.display = 'none';
+        } else {
+            input.focus();     // πρώτα focus (πυροδοτεί renderOptions(value))
+            renderOptions('');  // μετά override → εμφανίζει ΟΛΕΣ τις επιλογές
+        }
+    });
+
     wrapper.appendChild(input);
+    wrapper.appendChild(arrow);
     wrapper.appendChild(dropdown);
     return wrapper;
 }

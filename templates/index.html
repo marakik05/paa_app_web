@@ -43,12 +43,12 @@
                 <select id="district" name="district" required>
                     <!-- Θα γεμίσει δυναμικά από το /api/regions -->
                 </select>
-                <button type="button" id="new-record">Νέα Εγγραφή</button>
-               
-                <button type="button" id="import">Εισαγωγή</button>
-                <button type="button" id="save">Αποθήκευση</button>
-                <button type="button" id="export">Εξαγωγή Excel</button>
-                
+                <div class="form-actions">
+                    <button type="button" id="new-record">Νέα Εγγραφή</button>
+                    <button type="button" id="import">Εισαγωγή</button>
+                    <button type="button" id="save">Αποθήκευση</button>
+                    <button type="button" id="export">Εξαγωγή Excel</button>
+                </div>
             </fieldset>
 
         </form>
@@ -57,8 +57,10 @@
             <fieldset>
                 <label for="search-afm">Αναζήτηση ΑΦΜ: </label>
                 <input type="text" id="search-afm" name="search-afm" inputmode="numeric" maxlength="9" autocomplete="off"/>
+                <label for="search-surname">Αναζήτηση Επώνυμου: </label>
+                <input type="text" id="search-surname" name="search-surname"  autocomplete="off"/>
                 
-                <button type="button" id="export-records">Εξαγωγή εγγραφών</button>
+            
             </fieldset>
             <table id="records-table">
                 <thead>
@@ -83,6 +85,7 @@
             <h2>Τυπική Απόδοση Αρχικης Κατάστασης</h2>
             <fieldset id="ta-fieldset">
             <button type="button" id="add-row">Προσθήκη</button>
+            <div class="ta-table-wrapper">
             <table id="ta-table">
                 <thead>
                     <tr>
@@ -90,17 +93,17 @@
                         <th>Περιγραφή Είδους/Ποικιλίας/Ζώων</th>
                         <th>Τυπική Απόδοση</th>
                         <th>Έκταση/Αριθμός ζώων</th>
-                        <th>Βιολογικά \Ολοκλ/μένη \ΠΟΠ/ΠΓΕ</th>
+                        <th>Βιολογικά/Ολοκληρωμένη/ΠΟΠ/ΠΓΕ</th>
                         <th>Δένδρα &gt;=4 ετών</th>
                         <th>Δένδρα &lt;4 ετών</th>
                         <th>Αμπέλι &gt;3 ετών</th>
-                        <th>ΤΑ ανά πιλογή</th>
+                        <th>ΤΑ ανά επιλογή</th>
                         <th>Διαγραφή</th>
                         <th>Σύνολο ΤΑ</th>
                         <th>ΤΑ Παραγωγικών</th>
                         <th>ΤΑ Φυτικής </th>
                         <th>ΤΑ Ζωικής </th>
-                        <th>ΤΑ Μελίσσια Mεταξοσκώληκες </th>
+                        <th>ΤΑ Μελίσσια/Mεταξοσκώληκες </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,6 +120,7 @@
                     </tr>
                 </tfoot>
             </table>
+            </div>
             </fieldset>
         </section>
 
@@ -140,8 +144,30 @@
         </div>
     </div>
 </div>
-      
+
     </main>
+
+    <input type="file" id="import-file-input" accept=".xlsx" hidden>
+
+    <div id="modal-import-conflict" style="display:none">
+        <div class="modal-overlay">
+            <div class="modal-box" style="min-width:440px">
+                <div class="modal-header">
+                    <h3>Επιλογή για υπάρχοντα ΑΦΜ</h3>
+                    <button type="button" id="modal-conflict-close" class="modal-close-btn">&#x2715;</button>
+                </div>
+                <p>Τα παρακάτω ΑΦΜ υπάρχουν ήδη στη βάση:</p>
+                <div id="conflict-list"></div>
+                <div class="modal-actions">
+                    <button type="button" id="conflict-replace-all">Αντικατάσταση Όλων</button>
+                    <button type="button" id="conflict-skip-all">Παράλειψη Όλων</button>
+                    <button type="button" id="conflict-confirm">Εισαγωγή</button>
+                    <button type="button" id="conflict-cancel">Ακύρωση</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ url_for('static', filename='main_window.js') }}"></script>
     <script src="{{ url_for('static', filename='section_arxiki.js') }}"></script>
      <script src="{{ url_for('static', filename='section_ta.js') }}"></script>

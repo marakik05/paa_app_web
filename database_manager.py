@@ -506,19 +506,66 @@ def to_int_or_empty(value):
 
 def delete_producer_entries(cursor, afm, scenario_type='initial'):
     """Διαγραφή entries για συγκεκριμένο AFM και scenario (χωρίς διαγραφή producer)"""
-    
-    
     try:
-       
         cursor.execute(
             "DELETE FROM osde_entries WHERE producer_afm = ? AND scenario_type = ?",
             (afm, scenario_type)
         )
-        
         return True
     except Exception as e:
         print(f"Database Error: {e}")
         return False
+
+
+def import_producers_batch_transaction_web(producers_data):
+    """Batch import παραγωγών — mini-transaction per ΑΦΜ (χωρίς moria/eligibility)."""
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        cursor = conn.cursor()
+        cursor.execute("PRAGMA foreign_keys = ON;")
+        success, failed = [], []
+        for data in producers_data:
+            afm = data['afm']
+            try:
+                cursor.execute("BEGIN TRANSACTION")
+                ts = _now_iso()
+                if data.get('_replace'):
+                    delete_producer_entries(cursor, afm, 'initial')
+                    cursor.execute(
+                        "UPDATE producers SET last_modified=? WHERE afm=?", (ts, afm))
+                else:
+                    cursor.execute(
+                        "INSERT INTO producers (afm,first_name,last_name,region,last_modified)"
+                        " VALUES (?,?,?,?,?)",
+                        (afm, data.get('name', ''), data.get('surname', ''),
+                         data.get('region', '--Επιλέξτε'), ts))
+                for entry in data.get('rows', []):
+                    cursor.execute('''
+                        INSERT INTO osde_entries (
+                            producer_afm, scenario_type, category_osde, description,
+                            typical_output, quantity, certification, trees_over_4,
+                            trees_under_4, vine_over_3, output_per_choice,
+                            total_output, ta_productive, ta_plant, ta_animal, ta_bees
+                        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+                    ''', (
+                        afm, 'initial',
+                        entry.get('category_osde', ''), entry.get('description', ''),
+                        None,
+                        to_float_or_empty(entry.get('quantity', '')),
+                        entry.get('certification', ''),
+                        to_int_or_empty(entry.get('trees_over_4', '')),
+                        to_int_or_empty(entry.get('trees_under_4', '')),
+                        entry.get('vine_over_3', ''),
+                        None, None, None, None, None, None
+                    ))
+                cursor.execute("COMMIT")
+                success.append(afm)
+            except Exception as e:
+                cursor.execute("ROLLBACK")
+                failed.append((afm, str(e)))
+        return {'total_success': len(success), 'total_failed': len(failed), 'failed': failed}
+    finally:
+        conn.close()
 
         
 

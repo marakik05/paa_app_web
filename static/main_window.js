@@ -1,4 +1,5 @@
 
+let _importNewData = [], _importConflicts = [];
 
 // ─── DOMContentLoaded — αγγίζει DOM, πρέπει να περιμένει ───
 document.addEventListener('DOMContentLoaded', () => {
@@ -45,7 +46,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Αρχική κατάσταση: η Αρχική είναι ενεργή → τα κουμπιά ενεργά
     updatePageButtons('arxiki');
 
-    
+    // ─── Import ───
+    document.getElementById('import').addEventListener('click', () => {
+        document.getElementById('import-file-input').value = '';
+        document.getElementById('import-file-input').click();
+    });
+
+    document.getElementById('import-file-input').addEventListener('change', function() {
+        if (!this.files[0]) return;
+        const fd = new FormData();
+        fd.append('file', this.files[0]);
+        fetch('/api/import/parse', { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) { showToast(data.error || 'Σφάλμα εισαγωγής.'); return; }
+                _importNewData = data.new_data;
+                _importConflicts = data.conflicts;
+                if (data.conflicts.length === 0) {
+                    _executeImport({}, data.new_data);
+                } else {
+                    _showConflictModal(data.new_data, data.conflicts);
+                }
+            });
+    });
+
+    // ─── Export ───
+    document.getElementById('export').addEventListener('click', () => {
+        const afm = document.getElementById('AFM').value.trim();
+        if (!afm) { showToast('Επιλέξτε παραγωγό πρώτα.'); return; }
+
+        const payload = {
+            name:    document.getElementById('name').value,
+            surname: document.getElementById('surname').value,
+            rows:    getTaRows(),
+            totals: {
+                total_ta:  document.getElementById('total-ta').textContent     || '',
+                ta_prod:   document.getElementById('total-ta-sum').textContent  || '',
+                ta_plant:  document.getElementById('total-ta-plant').textContent  || '',
+                ta_animal: document.getElementById('total-ta-animal').textContent || '',
+                ta_bees:   document.getElementById('total-ta-bee-silk').textContent || '',
+            },
+        };
+
+        fetch(`/api/producer/${afm}/export`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+        })
+        .then(r => r.blob())
+        .then(blob => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${afm}_ΤΑ.xlsx`;
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    });
+
+
 
     document.getElementById('save').addEventListener('click', () => {
     const afm = document.getElementById('AFM').value.trim();
@@ -73,6 +132,65 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 });
+
+function _executeImport(decisions, producers) {
+    fetch('/api/import/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ producers, decisions })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.ok) {
+            loadProducersTable();
+            document.getElementById('AFM').value     = '';
+            document.getElementById('name').value    = '';
+            document.getElementById('surname').value = '';
+            document.getElementById('district').selectedIndex = 0;
+            lockTaSection();
+            showToast(
+                `Εισήχθησαν ${data.total_success} παραγωγοί` +
+                (data.total_failed ? ` (${data.total_failed} σφάλματα)` : '') + '.',
+                'green'
+            );
+        }
+    });
+}
+
+function _showConflictModal(newData, conflicts) {
+    const list = document.getElementById('conflict-list');
+    list.innerHTML = '';
+    conflicts.forEach(c => {
+        const row = document.createElement('div');
+        row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:4px 0';
+        row.innerHTML =
+            `<span style="flex:1">${c.afm} — ${c.name} ${c.surname}</span>
+            <label><input type="radio" name="conf_${c.afm}" value="replace" checked> Αντικατάσταση</label>
+            <label><input type="radio" name="conf_${c.afm}" value="skip"> Παράλειψη</label>`;
+        list.appendChild(row);
+    });
+    document.getElementById('modal-import-conflict').style.display = 'block';
+
+    document.getElementById('conflict-replace-all').onclick = () =>
+        conflicts.forEach(c =>
+            list.querySelector(`[name="conf_${c.afm}"][value="replace"]`).checked = true);
+    document.getElementById('conflict-skip-all').onclick = () =>
+        conflicts.forEach(c =>
+            list.querySelector(`[name="conf_${c.afm}"][value="skip"]`).checked = true);
+    document.getElementById('conflict-cancel').onclick = () =>
+        document.getElementById('modal-import-conflict').style.display = 'none';
+    document.getElementById('modal-conflict-close').onclick = () =>
+        document.getElementById('modal-import-conflict').style.display = 'none';
+    document.getElementById('conflict-confirm').onclick = () => {
+        const decisions = {};
+        conflicts.forEach(c => {
+            decisions[c.afm] = list.querySelector(`[name="conf_${c.afm}"]:checked`).value;
+        });
+        document.getElementById('modal-import-conflict').style.display = 'none';
+        const withFlag = conflicts.map(c => ({ ...c, _conflict: true }));
+        _executeImport(decisions, newData.concat(withFlag));
+    };
+}
 
 // Άνοιγμα modal
 document.getElementById('new-record').addEventListener('click', () => {
