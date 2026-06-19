@@ -1,0 +1,235 @@
+/* ═══════════════════════════════════════════════════
+   CSS Variables —  Πράσινο θέμα
+   ═══════════════════════════════════════════════════ */
+:root {
+    --green-900: #1B5E20;
+    --green-800: #2E7D32;
+    --green-700: #388E3C;
+    --green-600: #43A047;
+    --green-200: #A5D6A7;
+    --green-100: #C8E6C9;
+    --green-50:  #E8F5E9;
+    --green-pale:#F1F8E9;
+
+    --olive-700: #1B5E20;
+    --olive-600: #2E7D32;
+
+    --red-800: #C62828;
+    --red-700: #D32F2F;
+
+    --text-primary:  #1A2E1A;
+    --text-secondary:#4A6741;
+    --text-muted:    #7A9E7A;
+    --text-on-dark:  #FFFFFF;
+
+    --bg-body:   #F4F8F0;
+    --bg-surface:#FFFFFF;
+
+    --border:    #C8E6C9;
+    --border-mid:#A5D6A7;
+
+    --shadow-sm: 0 1px 4px rgba(46,125,50,0.12);
+    --shadow-md: 0 4px 14px rgba(46,125,50,0.16);
+
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+
+    --font: 'Segoe UI', Arial, sans-serif;
+    --font-size: 14px;
+}
+
+/* ═══════════════════════════════════════════════════
+   Reset & Base
+   ═══════════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: var(--font-size); }
+
+body {
+    font-family: var(--font);
+    background: var(--bg-body);
+    color: var(--text-primary);
+    line-height: 1.5;
+    min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════════════════
+   Navbar
+   ═══════════════════════════════════════════════════ */
+header {
+    background: var(--green-800);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.28);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar {
+    display: flex;
+    align-items: center;
+    padding: 0 24px;
+    height: 50px;
+    gap: 4px;
+}
+
+.navbar a {
+    color: rgba(255,255,255,0.82);
+    text-decoration: none;
+    padding: 6px 18px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+    font-size: 13.5px;
+    letter-spacing: 0.02em;
+    transition: background 0.15s, color 0.15s;
+}
+
+.navbar a:hover:not(.nav-disabled) {
+    background: rgba(255,255,255,0.16);
+    color: #fff;
+}
+
+.navbar a.active {
+    background: rgba(255,255,255,0.22);
+    color: #fff;
+    font-weight: 700;
+}
+
+.navbar a.nav-disabled {
+    pointer-events: none;
+    opacity: 0.38;
+    cursor: default;
+}
+
+/* ═══════════════════════════════════════════════════
+   Main layout
+   ═══════════════════════════════════════════════════ */
+main {
+    padding: 20px 28px 48px;
+    max-width: 1700px;
+    margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════════════════
+   Buttons — base
+   ═══════════════════════════════════════════════════ */
+button {
+    cursor: pointer;
+    font-family: var(--font);
+    font-size: 13.5px;
+    font-weight: 500;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 0 16px;
+    height: 34px;
+    white-space: nowrap;
+    transition: background 0.15s, box-shadow 0.15s, transform 0.08s;
+}
+
+button:active:not(:disabled) { transform: translateY(1px); }
+
+button:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Primary — πράσινο */
+#new-record, #save, #add-row, #modal-save {
+    background: var(--green-800);
+    color: var(--text-on-dark);
+    box-shadow: var(--shadow-sm);
+}
+#new-record:hover:not(:disabled), #save:hover:not(:disabled),
+#add-row:hover:not(:disabled),    #modal-save:hover:not(:disabled) {
+    background: var(--green-700);
+    box-shadow: var(--shadow-md);
+}
+
+/* Secondary — λαδί */
+#import, #export, #conflict-confirm {
+    background: var(--green-800);
+    color: var(--text-on-dark);
+    box-shadow: var(--shadow-sm);
+}
+#import:hover:not(:disabled), #export:hover:not(:disabled),
+#conflict-confirm:hover:not(:disabled) {
+    background: var(--green-700);
+    box-shadow: var(--shadow-md);
+}
+
+/* Danger — κόκκινο */
+.delete-btn, .delete-row-btn, #conflict-replace-all, #modal-confirm-ok {
+    background: var(--red-800);
+    color: var(--text-on-dark);
+    box-shadow: var(--shadow-sm);
+}
+.delete-btn:hover:not(:disabled), .delete-row-btn:hover:not(:disabled),
+#conflict-replace-all:hover:not(:disabled), #modal-confirm-ok:hover:not(:disabled) {
+    background: var(--red-700);
+    box-shadow: var(--shadow-md);
+}
+
+/* Neutral — ακύρωση */
+#modal-cancel, #conflict-cancel, #conflict-skip-all, #modal-confirm-cancel {
+    background: #E0E0E0;
+    color: var(--text-primary);
+}
+#modal-cancel:hover, #conflict-cancel:hover, #conflict-skip-all:hover, #modal-confirm-cancel:hover {
+    background: #BDBDBD;
+}
+
+/* Edit button — outline πράσινο */
+.edit-btn {
+    background: transparent;
+    color: var(--green-800);
+    border: 1.5px solid var(--green-800);
+    box-shadow: none;
+}
+.edit-btn:hover:not(:disabled) {
+    background: var(--green-50);
+    box-shadow: none;
+}
+
+/* Μικρό × για delete row */
+.delete-row-btn {
+    padding: 0 10px;
+    height: 28px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1;
+}
+
+/* ═══════════════════════════════════════════════════
+   Section & h2
+   ═══════════════════════════════════════════════════ */
+[data-page-container] > h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--green-900);
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--green-100);
+}
+
+/* ═══════════════════════════════════════════════════
+   Toast (static/messages.js)
+   ═══════════════════════════════════════════════════ */
+.toast {
+    position: fixed;
+    top: 150px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    z-index: 9999;
+    max-width: min(90vw, 420px);
+    box-sizing: border-box;
+    text-align: center;
+    font-size: 13.5px;
+    font-weight: 500;
+    box-shadow: var(--shadow-md);
+}
+.toast-error   { background: var(--red-800); }
+.toast-success { background: var(--green-800); }

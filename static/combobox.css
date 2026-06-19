@@ -1,0 +1,85 @@
+/* ═══════════════════════════════════════════════════
+   Searchable Combobox
+   ═══════════════════════════════════════════════════ */
+.combo-wrapper { position: relative; width: 100%; }
+
+.combo-input {
+    width: 100%;
+    box-sizing: border-box;
+    height: 28px;
+    padding: 0 26px 0 6px;
+    border: 1px solid var(--border-mid);
+    border-radius: 3px;
+    font-size: 12.5px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: var(--font);
+    transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.combo-arrow {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 28px;
+    width: 24px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 9px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0 3px 3px 0;
+    transition: background 0.12s, color 0.12s;
+}
+
+.combo-arrow:hover {
+    background: var(--green-100);
+    color: var(--green-800);
+}
+
+.combo-input:focus {
+    outline: none;
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 2px rgba(67,160,71,0.2);
+}
+
+.combo-dropdown {
+    position: absolute;
+    z-index: 1000;
+    background: var(--bg-surface);
+    border: 1px solid var(--green-200);
+    border-top: none;
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+    max-height: 200px;
+    overflow-y: auto;
+    display: none;
+    width: 100%;
+    left: 0;
+    top: 100%;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.13);
+}
+
+.combo-dropdown-portal {
+    position: absolute;
+    z-index: 9999;
+    max-height: 260px;
+}
+
+.combo-option {
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--text-primary);
+    border-bottom: 1px solid var(--green-50);
+}
+
+.combo-option:last-child { border-bottom: none; }
+
+.combo-option:hover {
+    background: var(--green-50);
+    color: var(--green-800);
+}

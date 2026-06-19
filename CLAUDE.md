@@ -15,16 +15,17 @@ UI strings, comments, and variable names are in Greek.
 - **Frontend**: Vanilla JS + HTML + CSS (χωρίς framework)
 - **Storage**: SQLite via `database_manager.py`; DB at `%LOCALAPPDATA%\OsdeCalculatorApp_web\osde_app_web.db`
 - **Reference data**: `data/ta.xlsx` (τυπικές αποδόσεις) — φορτώνεται στο startup μέσω `utils/excel_loader.py`
-- **Styling**: `static/style.css` — CSS variables (πράσινο θέμα)
+- **Styling**: 6 αρχεία CSS στο `static/` (βλ. πίνακα παρακάτω) — CSS variables (πράσινο θέμα) στο `base.css`
 
 ### Page / Section flow
 
-Μία μόνο HTML σελίδα (`templates/index.html`) με δύο sections που εναλλάσσονται μέσω navbar:
+Μία μόνο HTML σελίδα (`templates/index.html`) με δύο sections που εναλλάσσονται μέσω navbar. Το  modal (_modals.html) είναι Jinja partials στο `templates/partials/`, συμπεριλαμβανόμενα με `{% include %}`:
 
 ```
 index.html
     ├── section[data-page-container="arxiki"]  — Συγκεντρωτικός πίνακας παραγωγών
-    └── section[data-page-container="ta"]      — Πίνακας υπολογισμού ΤΑ Αρχικής
+    ├── section[data-page-container="ta"]      — Πίνακας υπολογισμού ΤΑ Αρχικής
+    └── {% include 'partials/_modals.html' %}
 ```
 
 ### JS αρχεία
@@ -34,8 +35,18 @@ index.html
 | `static/main_window.js` | Navigation, import/export handlers, save handler |
 | `static/section_arxiki.js` | Πίνακας παραγωγών — φόρτωση, φιλτράρισμα, επεξεργασία, διαγραφή |
 | `static/section_ta.js` | Πίνακας ΤΑ — δόμηση γραμμών, recalcAll, searchable comboboxes |
-| `static/messages.js` | `showToast(msg, color)` — toast notifications |
-| `static/style.css` | Όλο το styling |
+| `static/messages.js` | `showToast(msg, color)`, `showConfirmModal(msg, title)` |
+
+### CSS αρχεία
+
+| Αρχείο | Σκοπός |
+|--------|--------|
+| `static/base.css` | Variables, reset, navbar, layout, buttons, section headers, toast |
+| `static/forms.css` | `#personal-info`, αναζήτηση αρχικής |
+| `static/tables.css` | Κοινά table styles, records-table, ta-table, tfoot |
+| `static/combobox.css` | Searchable combo + portal dropdown |
+| `static/modals.css` | Modal-overlay/box/header/actions, conflict-list |
+| `static/responsive.css` | 3 media queries (tablet/mobile/large screens) |
 
 ### Navigation logic (`main_window.js`)
 
@@ -316,7 +327,7 @@ Pure-Python functions χωρίς Qt dependency.
 - **Python 3.x** — χωρίς Qt/PySide2
 - **Vanilla JS** — χωρίς framework (React, Vue, κ.λπ.)
 - **UI language: Greek** everywhere
-- **CSS μόνο στο `static/style.css`** — χωρίς inline styles εκτός από δυναμικά (π.χ. toast, portal dropdown positioning)
+- **CSS μόνο στα αρχεία `static/*.css`** (βλ. πίνακα CSS αρχείων) — χωρίς inline styles εκτός από δυναμικά (π.χ. toast, portal dropdown positioning)
 - Read-only cells: background `var(--green-50)`
 - Searchable comboboxes: **πάντα portal pattern** (dropdown στο `document.body`) για να μην κόβεται από table overflow
 - Δεν γίνεται νέο API call για φιλτράρισμα — χρησιμοποιείται ο `_allProducers` cache

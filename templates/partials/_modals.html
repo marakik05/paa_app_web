@@ -1,0 +1,58 @@
+<div id="modal-confirm" style="display:none">
+    <div class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3 id="modal-confirm-title">Επιβεβαίωση</h3>
+                <button type="button" id="modal-confirm-close" class="modal-close-btn">&#x2715;</button>
+            </div>
+            <p id="modal-confirm-message"></p>
+            <div class="modal-actions">
+                <button type="button" id="modal-confirm-cancel">Ακύρωση</button>
+                <button type="button" id="modal-confirm-ok">Ναι</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-import-conflict" style="display:none">
+    <div class="modal-overlay">
+        <div class="modal-box" style="min-width:440px">
+            <div class="modal-header">
+                <h3>Επιλογή για υπάρχοντα ΑΦΜ</h3>
+                <button type="button" id="modal-conflict-close" class="modal-close-btn">&#x2715;</button>
+            </div>
+            <p>Τα παρακάτω ΑΦΜ υπάρχουν ήδη στη βάση:</p>
+            <div id="conflict-list"></div>
+            <div class="modal-actions">
+                <button type="button" id="conflict-replace-all">Αντικατάσταση Όλων</button>
+                <button type="button" id="conflict-skip-all">Παράλειψη Όλων</button>
+                <button type="button" id="conflict-confirm">Εισαγωγή</button>
+                <button type="button" id="conflict-cancel">Ακύρωση</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-new-record" style="display:none">
+    <div class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h3>Νέα Εγγραφή</h3>
+                <button type="button" id="modal-close" class="modal-close-btn">&#x2715;</button>
+            </div>
+            <label for="modal-afm">ΑΦΜ:</label>
+            <input type="text" id="modal-afm" maxlength="9" inputmode="numeric" autocomplete="off">
+            <label for="modal-name">Όνομα:</label>
+            <input type="text" id="modal-name" autocomplete="off">
+            <label for="modal-surname">Επώνυμο:</label>
+            <input type="text" id="modal-surname" autocomplete="off">
+            <label for="modal-district">Περιφέρεια:</label>
+            <select id="modal-district"></select>
+            <div class="modal-actions">
+                <button type="button" id="modal-save">Αποθήκευση</button>
+                <button type="button" id="modal-cancel">Ακύρωση</button>
+            </div>
+        </div>
+    </div>
+</div>
+

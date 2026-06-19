@@ -1,0 +1,191 @@
+/* ═══════════════════════════════════════════════════
+   TA fieldset
+   ═══════════════════════════════════════════════════ */
+#ta-fieldset { border: none; margin: 0; padding: 0; }
+#ta-fieldset:disabled { opacity: 0.5; pointer-events: none; }
+
+#add-row { margin-bottom: 14px; }
+
+/* ═══════════════════════════════════════════════════
+   Tables — κοινά
+   ═══════════════════════════════════════════════════ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    background: var(--bg-surface);
+}
+
+thead th {
+    background: var(--green-800);
+    color: var(--text-on-dark);
+    font-weight: 600;
+    text-align: center;
+    padding: 9px 10px;
+    border: 1px solid var(--green-900);
+    white-space: nowrap;
+    font-size: 12.5px;
+    letter-spacing: 0.01em;
+}
+
+tbody tr { transition: background 0.1s; }
+
+tbody tr:nth-child(even)  { background: var(--green-pale); }
+tbody tr:hover            { background: #DCEDC8; }
+
+tbody td {
+    padding: 6px 10px;
+    border: 1px solid var(--green-100);
+    vertical-align: middle;
+}
+
+/* ═══════════════════════════════════════════════════
+   Records table
+   ═══════════════════════════════════════════════════ */
+#records-table {
+    min-width: 760px;
+}
+
+/* ΑΦΜ */
+#records-table thead th:nth-child(1),
+#records-table tbody td:nth-child(1) { text-align: center; }
+
+
+#records-table tbody td:nth-child(1) {
+    font-family: var(--font);
+    font-weight: 500;
+    color: var(--green-800);
+}
+
+#records-table tbody td:nth-child(2) { text-align: center; }
+#records-table tbody td:nth-child(3) { text-align: center; }
+#records-table tbody td:nth-child(4) { text-align: center; }
+
+#records-table thead th:nth-child(5),
+#records-table tbody td:nth-child(5) { text-align: center; }
+
+#records-table tbody td:nth-child(5) {
+    font-family: var(--font);
+    font-weight: 500;
+    color: var(--green-900);
+}
+
+/* Τελευταία Επεξεργασία */
+#records-table thead th:nth-child(6),
+#records-table tbody td:nth-child(6) { text-align: center; }
+
+#records-table tbody td:nth-child(6) {
+    color: var(--text-muted);
+    font-size: 12px;
+}
+
+/* Action cols */
+#records-table thead th:nth-child(7),
+#records-table thead th:nth-child(8),
+#records-table tbody td:nth-child(7),
+#records-table tbody td:nth-child(8) {
+    text-align: center;
+    white-space: nowrap;
+    width: 110px;
+}
+
+/* ═══════════════════════════════════════════════════
+   Πίνακες — γενικό scroll wrapper (records-table & ta-table)
+   ═══════════════════════════════════════════════════ */
+.table-scroll-wrapper {
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--border);
+}
+
+#ta-table {
+    min-width: 1260px;
+    border-radius: 0;
+}
+
+/* Summary-group headers (cols 11–15): σκουρότερο πράσινο */
+#ta-table thead th:nth-child(n+11) {
+    background: var(--green-900);
+    border-color: var(--green-900);
+}
+
+/* Read-only cols μέσα σε tbody */
+#ta-table td[data-col="2"],
+#ta-table td[data-col="8"] {
+    background: var(--green-50);
+    text-align: center;
+    font-weight: 500;
+    color: var(--green-800);
+    font-family: var(--font);
+}
+
+/* hover override για read-only */
+#ta-table tbody tr:hover td[data-col="2"],
+#ta-table tbody tr:hover td[data-col="8"] {
+    background: var(--green-100);
+}
+
+/* Κατηγορία & Περιγραφή */
+#ta-table td[data-col="0"],
+#ta-table td[data-col="1"] { min-width: 200px; }
+
+/* Αριθμητικά inputs — κεντραρισμένα */
+#ta-table td[data-col="3"] input,
+#ta-table td[data-col="5"] input,
+#ta-table td[data-col="6"] input { text-align: center; }
+
+/* Delete column */
+#ta-table td[data-col="9"] {
+    text-align: center;
+    width: 52px;
+    padding: 4px 6px;
+}
+
+/* tfoot */
+#ta-table tfoot td {
+    background: var(--green-800);
+    color: var(--text-on-dark);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 9px 10px;
+    border: 1px solid var(--green-900);
+    text-align: center;
+    font-family: var(--font);
+}
+
+#ta-table tfoot td:first-child {
+    text-align: right;
+    font-family: var(--font);
+    letter-spacing: 0.02em;
+}
+
+/* Inputs & selects μέσα στον πίνακα */
+#ta-table input[type="text"],
+#ta-table select {
+    width: 100%;
+    height: 28px;
+    padding: 0 6px;
+    border: 1px solid var(--border-mid);
+    border-radius: 3px;
+    font-size: 12.5px;
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-family: var(--font);
+    transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+#ta-table input[type="text"]:focus,
+#ta-table select:focus {
+    outline: none;
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 2px rgba(67,160,71,0.2);
+}
+
+#ta-table input:disabled,
+#ta-table select:disabled {
+    background: #ECEFF1;
+    color: #9E9E9E;
+    cursor: not-allowed;
+    border-color: #E0E0E0;
+}

@@ -1,0 +1,55 @@
+/* ═══════════════════════════════════════════════════
+   Responsive — Tablet (≤1024px)
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .navbar { padding: 0 14px; }
+
+    main { padding: 16px 18px 32px; }
+}
+
+/* ═══════════════════════════════════════════════════
+   Responsive — Mobile (≤600px)
+   ═══════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+    .navbar { padding: 0 8px; height: 44px; gap: 2px; }
+    .navbar a { padding: 5px 10px; font-size: 12.5px; }
+
+    main { padding: 10px 10px 28px; }
+
+    #personal-info { padding: 12px 14px; }
+
+    #personal-info #AFM,
+    #personal-info #name,
+    #personal-info #surname,
+    #personal-info #district {
+        flex: 1 1 100%;
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+        width: 100%;
+        margin-left: 0;
+    }
+    .form-actions button { flex: 1 1 calc(50% - 5px); }
+
+    table { font-size: 12px; }
+    thead th  { padding: 7px 8px; font-size: 11.5px; }
+    tbody td  { padding: 5px 8px; }
+
+    .modal-overlay { padding: 16px; }
+    .modal-box {
+        min-width: unset;
+        width: 100%;
+        padding: 20px;
+    }
+}
+
+/* ═══════════════════════════════════════════════════
+   Responsive — Μεγάλες οθόνες / TV (≥1920px)
+   ═══════════════════════════════════════════════════ */
+@media (min-width: 1920px) {
+    html { font-size: 16px; }
+    main { max-width: 2200px; }
+}
