@@ -28,7 +28,7 @@ async function handleDeleteClick(afm) {
         .then(r => r.json())
         .then(data => {
             if (!data.ok) { showToast('Σφάλμα κατά τη διαγραφή.'); return; }
-            showToast('Ο παραγωγός διαγράφηκε.', 'green');
+            showToast('Ο παραγωγός διαγράφηκε.', 'success');
             loadProducersTable();
             if (document.getElementById('AFM').value === afm) {
                 document.getElementById('AFM').value     = '';
@@ -51,7 +51,7 @@ function loadProducer(afm) {
             document.getElementById('district').value = data.region;
             loadTaTable(data.initial_rows || []);
             markClean();  // φρέσκα φορτωμένα δεδομένα → καθαρή κατάσταση
-            showToast('Τα δεδομένα φορτώθηκαν!', 'green');
+            showToast('Τα δεδομένα φορτώθηκαν!', 'success');
         });
 }
 

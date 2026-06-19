@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(r => r.json())
     .then(data => {
         if (data.ok) {
-            showToast('Επιτυχής αποθήκευση!', 'green');
+            showToast('Επιτυχής αποθήκευση!', 'success');
             markClean();
             loadProducersTable();
         }
@@ -171,7 +171,7 @@ function _executeImport(decisions, producers) {
             showToast(
                 `Εισήχθησαν ${data.total_success} παραγωγοί` +
                 (data.total_failed ? ` (${data.total_failed} σφάλματα)` : '') + '.',
-                'green'
+                'success'
             );
         }
     });
@@ -258,7 +258,7 @@ document.getElementById('modal-save').addEventListener('click', () => {
             if (data && data.ok) {
                 closeModal();
                 loadProducersTable();
-                showToast('Ο παραγωγός αποθηκεύτηκε!', 'green');
+                showToast('Ο παραγωγός αποθηκεύτηκε!', 'success');
             }
         });
 });
