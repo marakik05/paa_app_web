@@ -223,23 +223,23 @@ button:disabled {
 }
 
 /* Danger — κόκκινο */
-.delete-btn, .delete-row-btn, #conflict-replace-all {
+.delete-btn, .delete-row-btn, #conflict-replace-all, #modal-confirm-ok {
     background: var(--red-800);
     color: var(--text-on-dark);
     box-shadow: var(--shadow-sm);
 }
 .delete-btn:hover:not(:disabled), .delete-row-btn:hover:not(:disabled),
-#conflict-replace-all:hover:not(:disabled) {
+#conflict-replace-all:hover:not(:disabled), #modal-confirm-ok:hover:not(:disabled) {
     background: var(--red-700);
     box-shadow: var(--shadow-md);
 }
 
 /* Neutral — ακύρωση */
-#modal-cancel, #conflict-cancel, #conflict-skip-all {
+#modal-cancel, #conflict-cancel, #conflict-skip-all, #modal-confirm-cancel {
     background: #E0E0E0;
     color: var(--text-primary);
 }
-#modal-cancel:hover, #conflict-cancel:hover, #conflict-skip-all:hover {
+#modal-cancel:hover, #conflict-cancel:hover, #conflict-skip-all:hover, #modal-confirm-cancel:hover {
     background: #BDBDBD;
 }
 

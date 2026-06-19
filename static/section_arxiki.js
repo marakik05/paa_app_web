@@ -1,7 +1,13 @@
 let _allProducers = [];
 
 //Συνάρτηση για το κουμπί επεξεργασίας παραγωγού
-function handleEditClick(afm) {
+async function handleEditClick(afm) {
+    // Προειδοποίηση αν υπάρχουν μη-αποθηκευμένες αλλαγές πριν αλλάξει ΑΦΜ/δεδομένα
+    if (_hasUnsavedChanges &&
+        !(await showConfirmModal('Υπάρχουν μη αποθηκευμένες αλλαγές που θα χαθούν. Θέλετε να συνεχίσετε;'))) {
+        return;
+    }
+
     document.getElementById('AFM').value = afm;
 
     unlockTaSection();  // πρώτα ξεκλειδώνει το nav link "ΤΑ Αρχικής"
@@ -16,8 +22,8 @@ function handleEditClick(afm) {
 }
 
 //Συνάρτηση για το κουμπί διαγραφής παραγωγού
-function handleDeleteClick(afm) {
-    if (!confirm(`Διαγραφή παραγωγού με ΑΦΜ ${afm};`)) return;
+async function handleDeleteClick(afm) {
+    if (!(await showConfirmModal(`Επιθυμείτε τη διαγραφή παραγωγού με ΑΦΜ ${afm};`))) return;
     fetch(`/api/producer/${afm}`, { method: 'DELETE' })
         .then(r => r.json())
         .then(data => {
@@ -28,6 +34,7 @@ function handleDeleteClick(afm) {
                 document.getElementById('AFM').value     = '';
                 document.getElementById('name').value    = '';
                 document.getElementById('surname').value = '';
+                markClean();
                 lockTaSection();;
             }
         });
@@ -43,6 +50,7 @@ function loadProducer(afm) {
             document.getElementById('surname').value  = data.surname;
             document.getElementById('district').value = data.region;
             loadTaTable(data.initial_rows || []);
+            markClean();  // φρέσκα φορτωμένα δεδομένα → καθαρή κατάσταση
             showToast('Τα δεδομένα φορτώθηκαν!', 'green');
         });
 }

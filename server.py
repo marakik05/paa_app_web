@@ -1,5 +1,5 @@
 from flask import Flask, render_template, jsonify, request
-
+import os
 from database_manager import fetch_producer, setup_database, fetch_all_producers, delete_producer
 from utils.excel_loader import load_excel_data, resource_path, PERIFERIES
 from utils.ta_calculations import calc_row, calc_totals, to_float, to_int
@@ -195,4 +195,7 @@ def export_producer(afm):
 
 
 if __name__ == '__main__':
+    # debug = os.environ.get('FLASK_DEBUG') == '1'
+    # app.run(debug=debug)
+    
     app.run(debug=True)

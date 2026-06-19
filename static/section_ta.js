@@ -290,6 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('add-row').addEventListener('click', () => {
         const tbody = document.querySelector('#ta-table tbody');
         tbody.appendChild(buildTaRow());
+        markDirty();
         recalcAll();
     });
 
@@ -300,6 +301,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const td = e.target.closest('td');
         if (!td) return;
 
+        markDirty();
         // αν άλλαξε η κατηγορία (col 0) → ανανεώνει τις περιγραφές (col 1)
         if (td.dataset.col === '0') {
             const cells = td.closest('tr').querySelectorAll('td');
@@ -313,6 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let recalcTimer;
     tbody.addEventListener('input', (e) => {
         if (e.target.tagName === 'INPUT') {
+            markDirty();
             clearTimeout(recalcTimer);
             recalcTimer = setTimeout(recalcAll, 350);
         }
@@ -320,6 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tbody.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-row-btn')) {
+            markDirty();
             e.target.closest('tr').remove();
             recalcAll();
         }

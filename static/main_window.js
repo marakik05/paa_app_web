@@ -1,8 +1,18 @@
 
 let _importNewData = [], _importConflicts = [];
 
+// ─── Παρακολούθηση μη-αποθηκευμένων αλλαγών ───
+let _hasUnsavedChanges = false;
+function markDirty() { _hasUnsavedChanges = true; }
+function markClean() { _hasUnsavedChanges = false; }
+
 // ─── DOMContentLoaded — αγγίζει DOM, πρέπει να περιμένει ───
 document.addEventListener('DOMContentLoaded', () => {
+
+    // Σήμανση αλλαγών στα στοιχεία παραγωγού
+    document.getElementById('name').addEventListener('input', markDirty);
+    document.getElementById('surname').addEventListener('input', markDirty);
+    document.getElementById('district').addEventListener('change', markDirty);
 
     // Γέμισμα combo περιφέρειας από το backend (≈ combo_periferia.addItems)
     fetch('/api/regions')
@@ -126,10 +136,19 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
         if (data.ok) {
             showToast('Επιτυχής αποθήκευση!', 'green');
+            markClean();
             loadProducersTable();
         }
     });
 });
+
+    // Προειδοποίηση κλεισίματος καρτέλας/παραθύρου με μη-αποθηκευμένες αλλαγές
+    window.addEventListener('beforeunload', (e) => {
+        if (_hasUnsavedChanges) {
+            e.preventDefault();
+            e.returnValue = '';  // απαιτείται για να εμφανιστεί το native prompt
+        }
+    });
 
 });
 
@@ -147,6 +166,7 @@ function _executeImport(decisions, producers) {
             document.getElementById('name').value    = '';
             document.getElementById('surname').value = '';
             document.getElementById('district').selectedIndex = 0;
+            markClean();
             lockTaSection();
             showToast(
                 `Εισήχθησαν ${data.total_success} παραγωγοί` +
