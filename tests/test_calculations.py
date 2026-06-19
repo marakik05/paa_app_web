@@ -1,7 +1,6 @@
 """
-Unit tests for base_table TA calculation formulas.
-Tests: typiki_apodosi, ta_paragwgikwn, total_fzm routing, biologic %, eligibility Q7.
-Formulas extracted as pure functions — no Qt dependency.
+Unit tests for utils/ta_calculations.py — οι πραγματικές pure-Python
+συναρτήσεις υπολογισμού ΤΑ που χρησιμοποιεί το server.py (calc_row, calc_totals).
 """
 import unittest
 import os
@@ -9,120 +8,16 @@ import sys
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
-from utils.excel_loader import (
-    norm, in_norm_set,
-    LOCK_AMPELI_NORM, FMZ_ZWIKI_NORM, FMZ_MELISSES_NORM, ISLANDS
+from utils.ta_calculations import (
+    typiki_apodosi, ta_paragwgikwn, route_fzm, paragwgikwn,
+    lookup_typical_output, calc_row, calc_totals, to_float, to_int,
 )
-
-
-# ─── Extracted TA formulas ───────────────────────────────────────────
-
-def typiki_apodosi(col_0, col_2, col_3, col_5, col_6, col_7):
-    """
-    Υπολογισμός ΤΑ ανά αγροτεμάχιο (στήλη 8).
-    col_0: category, col_2: TA, col_3: area,
-    col_5: trees>=4, col_6: trees<4, col_7: vine>3yr
-    """
-    if col_2 is None or col_3 is None:
-        return None
-
-    if in_norm_set(col_0, LOCK_AMPELI_NORM):
-        if col_7 == "Ναι":
-            return col_2 * col_3
-        elif col_7 == "Όχι":
-            return (col_2 / 2) * col_3
-        else:  # empty or "--Επιλέξτε"
-            return None
-    else:
-        if (col_5 is None or col_5 == 0) and (col_6 is None or col_6 == 0):
-            return col_2 * col_3
-        if col_5 is None or col_5 == 0:
-            return (col_2 / 2) * col_3
-        if col_6 is None or col_6 == 0:
-            return col_2 * col_3
-        total = col_5 + col_6
-        return col_2 * (col_3 * (col_5 / total)) + (col_2 / 2) * (col_3 * (col_6 / total))
-
-
-def ta_paragwgikwn(col_0, col_2, col_3, col_5, col_6, col_7):
-    """
-    Υπολογισμός ΤΑ παραγωγικών (μόνο παραγωγικά δένδρα).
-    """
-    if col_2 is None or col_3 is None:
-        return None
-
-    if in_norm_set(col_0, LOCK_AMPELI_NORM):
-        if col_7 == "Ναι":
-            return col_2 * col_3
-        else:
-            return None
-    else:
-        if (col_5 is None or col_5 == 0) and (col_6 is None or col_6 == 0):
-            return col_2 * col_3
-        if col_5 is None or col_5 == 0:
-            return None
-        if col_6 is None or col_6 == 0:
-            return col_2 * col_3
-        total = col_5 + col_6
-        return col_2 * (col_3 * (col_5 / total))
-
-
-def route_fzm(category):
-    """
-    Determines which TA column a category goes to.
-    Returns 12 (φυτική), 13 (ζωική), or 14 (μελίσσια).
-    """
-    if in_norm_set(category, FMZ_ZWIKI_NORM):
-        return 13
-    elif in_norm_set(category, FMZ_MELISSES_NORM):
-        return 14
-    return 12
-
-
-def eligibility_q7(region, ta):
-    """
-    Επιλεξιμότητα κριτηρίου Q7.
-    ISLANDS (threshold 8000), others (threshold 12000).
-    """
-    if ta is None:
-        return None
-    if region in ISLANDS and ta >= 8000:
-        return "ΕΠΙΛΕΞΙΜΟΣ"
-    elif region not in ISLANDS and ta >= 12000:
-        return "ΕΠΙΛΕΞΙΜΟΣ"
-    return "ΜΗ ΕΠΙΛΕΞΙΜΟΣ"
-
-
-def biologic_pct(rows_col4_col8, total_ta):
-    """
-    Υπολογισμός ποσοστού βιολογικών/συστημάτων ποιότητας.
-    rows: list of (col4_text, col8_value)
-    total_ta: float (col 10 value)
-    Mirrors `baseTable.biologic`: μόνο τιμές στο INCLUDED set μετράνε.
-    """
-    INCLUDED = {"Βιολογικά", "Ολοκληρωμένη", "ΠΟΠ/ΠΓΕ"}
-    if total_ta is None or total_ta == 0:
-        return None
-
-    total_bio = 0.0
-    has_value = False
-    for choice, value in rows_col4_col8:
-        if choice not in INCLUDED:
-            continue
-        if value is not None:
-            total_bio += value
-            has_value = True
-
-    if not has_value:
-        return 0.0
-
-    return (total_bio / total_ta) * 100
 
 
 # ─── Tests: typiki_apodosi ───────────────────────────────────────────
 
 class TestTypikiApodosi(unittest.TestCase):
-    """""Κλάση για το τεστάρισμα της def υπολογισμού τυπικής απόδοσης"""
+    """Κλάση για το τεστάρισμα της def υπολογισμού τυπικής απόδοσης (στήλη 8)."""
 
     def test_no_trees_no_vine(self):
         """Simple: TA * area."""
@@ -188,7 +83,8 @@ class TestTypikiApodosi(unittest.TestCase):
 # ─── Tests: ta_paragwgikwn ───────────────────────────────────────────
 
 class TestTaParagwgikwn(unittest.TestCase):
-    """""Κλάση για το τεστάρισμα της def υπολογισμού τυπικής απόδοσης παραγωγικών"""
+    """Κλάση για το τεστάρισμα της def υπολογισμού ΤΑ παραγωγικών δένδρων."""
+
     def test_no_trees(self):
         """No trees → TA * area (all productive)."""
         result = ta_paragwgikwn("ΣΚΛΗΡΟΣ ΣΙΤΟΣ", 100.0, 5.0, None, None, "")
@@ -222,14 +118,14 @@ class TestTaParagwgikwn(unittest.TestCase):
 
     def test_vine_empty(self):
         """Ampeli with no selection → None."""
-        result = typiki_apodosi("ΑΜΠΕΛΩΝΕΣ ΓΙΑ ΠΑΡΑΓΩΓΗ ΟΙΝΟΥ", 150.0, 2.0, None, None, "")
+        result = ta_paragwgikwn("ΑΜΠΕΛΩΝΕΣ ΓΙΑ ΠΑΡΑΓΩΓΗ ΟΙΝΟΥ", 150.0, 2.0, None, None, "")
         self.assertIsNone(result)
 
 
 # ─── Tests: route_fzm ────────────────────────────────────────────────
 
 class TestRouteFzm(unittest.TestCase):
-    """""Κλάση για το αν αθροίζονται σωστά οι ΤΑ φυτικής, ζωικής και μελισσιών/μεταξοσκώληκων"""
+    """Κλάση για το routing ΤΑ φυτικής/ζωικής/μελισσιών (στήλες 12/13/14)."""
 
     def test_zwiki(self):
         self.assertEqual(route_fzm("ΑΙΓΟΠΡΟΒΑΤΑ"), 13)
@@ -246,114 +142,149 @@ class TestRouteFzm(unittest.TestCase):
         self.assertEqual(route_fzm("ΓΕΩΜΗΛΑ"), 12)
 
 
-# ─── Tests: eligibility Q7 ──────────────────────────────────────────
+# ─── Tests: paragwgikwn (στήλη 11 — ΤΑ Παραγωγικών) ──────────────────
 
-class TestEligibilityQ7(unittest.TestCase):
+class TestParagwgikwn(unittest.TestCase):
 
-    def test_island_above_8000(self):
-        self.assertEqual(eligibility_q7("Νότιο Αιγαίο", 8000), "ΕΠΙΛΕΞΙΜΟΣ")
-        self.assertEqual(eligibility_q7("Βόρειο Αιγαίο", 10000), "ΕΠΙΛΕΞΙΜΟΣ")
-        self.assertEqual(eligibility_q7("Ιόνια Νησιά", 9000), "ΕΠΙΛΕΞΙΜΟΣ")
+    def test_paragwgika_cat_and_keyword_uses_output_per_choice(self):
+        """ΑΙΓΟΠΡΟΒΑΤΑ + περιγραφή με 'ΑΙΓΕΣ' → επιστρέφει το output_per_choice."""
+        result = paragwgikwn("ΑΙΓΟΠΡΟΒΑΤΑ", "ΑΙΓΕΣ ΓΑΛΑΚΤΟΠΑΡΑΓΩΓΗΣ", 500.0, 0.0)
+        self.assertEqual(result, 500.0)
 
-    def test_island_below_8000(self):
-        self.assertEqual(eligibility_q7("Νότιο Αιγαίο", 7999.99), "ΜΗ ΕΠΙΛΕΞΙΜΟΣ")
-        self.assertEqual(eligibility_q7("Βόρειο Αιγαίο", 4000), "ΜΗ ΕΠΙΛΕΞΙΜΟΣ")
+    def test_non_paragwgika_cat_uses_productive_value(self):
+        """Κατηγορία εκτός PARAGWGIKA_CAT → επιστρέφει το productive_value (π.χ. ta_paragwgikwn)."""
+        result = paragwgikwn("ΕΛΑΙΩΝΕΣ", "Οποιαδήποτε", 500.0, 300.0)
+        self.assertEqual(result, 300.0)
 
-    def test_mainland_above_12000(self):
-        self.assertEqual(eligibility_q7("Αττική", 12000), "ΕΠΙΛΕΞΙΜΟΣ")
-        self.assertEqual(eligibility_q7("Κρήτη", 15000), "ΕΠΙΛΕΞΙΜΟΣ")
-
-    def test_mainland_below_12000(self):
-        self.assertEqual(eligibility_q7("Αττική", 11999.99), "ΜΗ ΕΠΙΛΕΞΙΜΟΣ")
-        self.assertEqual(eligibility_q7("Θεσσαλία", 5000), "ΜΗ ΕΠΙΛΕΞΙΜΟΣ")
-
-    def test_none_ta(self):
-        self.assertIsNone(eligibility_q7("Αττική", None))
-        
-    def test_none_all(self):
-        self.assertIsNone(eligibility_q7(None, None))
-
-    def test_zero_ta(self):
-        self.assertEqual(eligibility_q7("Αττική", 0), "ΜΗ ΕΠΙΛΕΞΙΜΟΣ")
-
-    def test_island_boundary(self):
-        """Exactly at 8000 on island → ΕΠΙΛΕΞΙΜΟΣ."""
-        self.assertEqual(eligibility_q7("Ιόνια Νησιά", 8000), "ΕΠΙΛΕΞΙΜΟΣ")
-
-    def test_mainland_boundary(self):
-        """Exactly at 12000 on mainland → ΕΠΙΛΕΞΙΜΟΣ."""
-        self.assertEqual(eligibility_q7("Θεσσαλία", 12000), "ΕΠΙΛΕΞΙΜΟΣ")
+    def test_paragwgika_cat_without_keyword_uses_productive_value(self):
+        """ΑΙΓΟΠΡΟΒΑΤΑ αλλά περιγραφή χωρίς keyword (π.χ. 'ΤΡΑΓΟΙ') → productive_value."""
+        result = paragwgikwn("ΑΙΓΟΠΡΟΒΑΤΑ", "ΤΡΑΓΟΙ", 500.0, 300.0)
+        self.assertEqual(result, 300.0)
 
 
-# ─── Tests: biologic percentage ──────────────────────────────────────
+# ─── Tests: lookup_typical_output (στήλη 2) ──────────────────────────
 
-class TestBiologicPct(unittest.TestCase):
+class TestLookupTypicalOutput(unittest.TestCase):
 
-    def test_all_biologic(self):
-        rows = [("Βιολογικά", 500.0), ("Βιολογικά", 300.0)]
-        result = biologic_pct(rows, 800.0)
-        self.assertAlmostEqual(result, 100.0)
+    def setUp(self):
+        self.value_mapping = {
+            ("CAT", "DESC"): {"default": 100.0, "aegean": 150.0},
+        }
 
-    def test_half_biologic(self):
-        rows = [("Βιολογικά", 500.0), ("Συμβατικά", 500.0)]
-        result = biologic_pct(rows, 1000.0)
-        self.assertAlmostEqual(result, 50.0)
+    def test_no_region_selected(self):
+        self.assertIsNone(lookup_typical_output(self.value_mapping, "CAT", "DESC", ""))
+        self.assertIsNone(lookup_typical_output(self.value_mapping, "CAT", "DESC", "--Επιλέξτε"))
 
-    def test_no_biologic(self):
-        rows = [("Συμβατικά", 500.0), ("Συμβατικά", 300.0)]
-        result = biologic_pct(rows, 800.0)
-        self.assertAlmostEqual(result, 0.0)
+    def test_unknown_pair_returns_none(self):
+        self.assertIsNone(lookup_typical_output(self.value_mapping, "X", "Y", "Αττική"))
 
-    def test_mixed_systems(self):
-        """Βιολογικά + ΠΟΠ/ΠΓΕ both count."""
-        rows = [("Βιολογικά", 400.0), ("ΠΟΠ/ΠΓΕ", 200.0), ("Συμβατικά", 400.0)]
-        result = biologic_pct(rows, 1000.0)
-        self.assertAlmostEqual(result, 60.0)
+    def test_default_region_uses_default_column(self):
+        result = lookup_typical_output(self.value_mapping, "CAT", "DESC", "Αττική")
+        self.assertEqual(result, 100.0)
 
-    def test_zero_total(self):
-        rows = [("Βιολογικά", 100.0)]
-        result = biologic_pct(rows, 0)
-        self.assertIsNone(result)
+    def test_aegean_region_uses_aegean_column(self):
+        result = lookup_typical_output(self.value_mapping, "CAT", "DESC", "Κρήτη")
+        self.assertEqual(result, 150.0)
+        result = lookup_typical_output(self.value_mapping, "CAT", "DESC", "Νότιο Αιγαίο")
+        self.assertEqual(result, 150.0)
 
-    def test_none_total(self):
-        rows = [("Βιολογικά", 100.0)]
-        result = biologic_pct(rows, None)
-        self.assertIsNone(result)
 
-    def test_empty_rows(self):
-        """No rows with quality systems → 0%."""
-        result = biologic_pct([], 1000.0)
-        self.assertAlmostEqual(result, 0.0)
+# ─── Tests: calc_row / calc_totals (server.py /api/ta/recalculate) ───
 
-    def test_default_excluded(self):
-        """--Επιλέξτε should be excluded."""
-        rows = [("--Επιλέξτε", 500.0)]
-        result = biologic_pct(rows, 500.0)
-        self.assertAlmostEqual(result, 0.0)
+class TestCalcRow(unittest.TestCase):
 
-    def test_oloklirwmeni(self):
-        """Ολοκληρωμένη should count as quality system."""
-        rows = [("Ολοκληρωμένη", 600.0)]
-        result = biologic_pct(rows, 1000.0)
-        self.assertAlmostEqual(result, 60.0)
+    def setUp(self):
+        self.value_mapping = {
+            ("ΕΛΑΙΩΝΕΣ", "Desc"): {"default": 100.0, "aegean": 120.0},
+            ("ΑΙΓΟΠΡΟΒΑΤΑ", "ΑΙΓΕΣ"): {"default": 200.0, "aegean": 220.0},
+        }
 
-    def test_unknown_value_not_counted(self):
-        """Τιμή εκτός INCLUDED whitelist (π.χ. typo) → δεν προσμετράται."""
-        rows = [("Βιολογικά", 500.0), ("Foo", 300.0)]
-        result = biologic_pct(rows, 800.0)
-        self.assertAlmostEqual(result, 62.5)  # 500/800
+    def test_calc_row_basic(self):
+        """ΕΛΑΙΩΝΕΣ (tree crop) δεν είναι σε LOCK_TREES → οι στήλες δένδρων είναι ενεργές."""
+        result = calc_row(self.value_mapping, "Αττική", "ΕΛΑΙΩΝΕΣ", "Desc", 5.0, None, None, "")
+        self.assertEqual(result["typical_output"], 100.0)
+        self.assertEqual(result["output_per_choice"], 500.0)
+        self.assertEqual(result["route"], 12)
+        self.assertFalse(result["lock_ampeli"])
+        self.assertFalse(result["lock_trees"])
 
-    def test_conventional_excluded(self):
-        """Συμβατικά → εκτός INCLUDED → 0%."""
-        rows = [("Συμβατικά", 1000.0)]
-        result = biologic_pct(rows, 1000.0)
-        self.assertAlmostEqual(result, 0.0)
+    def test_calc_row_locks_for_ampeli(self):
+        result = calc_row(self.value_mapping, "Αττική", "ΑΜΠΕΛΩΝΕΣ ΓΙΑ ΠΑΡΑΓΩΓΗ ΟΙΝΟΥ", "Desc", 2.0, None, None, "Ναι")
+        self.assertTrue(result["lock_ampeli"])
 
-    def test_pop_pge(self):
-        """ΠΟΠ/ΠΓΕ should count."""
-        rows = [("ΠΟΠ/ΠΓΕ", 400.0)]
-        result = biologic_pct(rows, 1000.0)
-        self.assertAlmostEqual(result, 40.0)
+    def test_calc_row_locks_trees_for_animals(self):
+        result = calc_row(self.value_mapping, "Αττική", "ΑΙΓΟΠΡΟΒΑΤΑ", "ΑΙΓΕΣ", 10.0, None, None, "")
+        self.assertTrue(result["lock_trees"])
+        self.assertEqual(result["route"], 13)
+        # ΑΙΓΟΠΡΟΒΑΤΑ + ΑΙΓΕΣ → productive = output_per_choice
+        self.assertEqual(result["productive"], result["output_per_choice"])
+
+
+class TestCalcTotals(unittest.TestCase):
+
+    def test_totals_sum_by_route(self):
+        rows_calc = [
+            {"output_per_choice": 100.0, "productive": 100.0, "route": 12},
+            {"output_per_choice": 200.0, "productive": None, "route": 13},
+            {"output_per_choice": 50.0, "productive": 50.0, "route": 14},
+        ]
+        totals = calc_totals(rows_calc)
+        self.assertEqual(totals["total_output"], 350.0)
+        self.assertEqual(totals["ta_productive"], 150.0)
+        self.assertEqual(totals["ta_plant"], 100.0)
+        self.assertEqual(totals["ta_animal"], 200.0)
+        self.assertEqual(totals["ta_bees"], 50.0)
+
+    def test_totals_empty_rows_returns_none(self):
+        totals = calc_totals([])
+        self.assertIsNone(totals["total_output"])
+        self.assertIsNone(totals["ta_productive"])
+        self.assertIsNone(totals["ta_plant"])
+        self.assertIsNone(totals["ta_animal"])
+        self.assertIsNone(totals["ta_bees"])
+
+    def test_totals_ignores_none_values(self):
+        rows_calc = [
+            {"output_per_choice": None, "productive": None, "route": 12},
+            {"output_per_choice": 100.0, "productive": 100.0, "route": 12},
+        ]
+        totals = calc_totals(rows_calc)
+        self.assertEqual(totals["total_output"], 100.0)
+
+
+# ─── Tests: to_float / to_int (input parsing helpers) ────────────────
+
+class TestToFloat(unittest.TestCase):
+
+    def test_empty_and_none(self):
+        self.assertIsNone(to_float(""))
+        self.assertIsNone(to_float(None))
+
+    def test_comma_decimal(self):
+        self.assertEqual(to_float("1,5"), 1.5)
+
+    def test_dot_decimal(self):
+        self.assertEqual(to_float("3.5"), 3.5)
+
+    def test_invalid_returns_none(self):
+        self.assertIsNone(to_float("abc"))
+
+
+class TestToInt(unittest.TestCase):
+
+    def test_empty_and_none(self):
+        self.assertIsNone(to_int(""))
+        self.assertIsNone(to_int(None))
+
+    def test_valid_int_string(self):
+        self.assertEqual(to_int("3"), 3)
+
+    def test_decimal_string_returns_none(self):
+        """to_int δεν κάνει round — δεκαδικό string αποτυγχάνει στο int()."""
+        self.assertIsNone(to_int("1,5"))
+
+    def test_invalid_returns_none(self):
+        self.assertIsNone(to_int("abc"))
 
 
 if __name__ == '__main__':

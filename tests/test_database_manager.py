@@ -40,7 +40,7 @@ class TestSetupDatabase(_TempDBMixin, unittest.TestCase):
         cur.execute("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name")
         tables = {r[0] for r in cur.fetchall()}
         conn.close()
-        for t in ('producers', 'osde_entries', 'eligibility', 'moria'):
+        for t in ('producers', 'osde_entries'):
             self.assertIn(t, tables)
 
     def test_schema_version_set(self):
@@ -98,7 +98,7 @@ class TestMigrations(_TempDBMixin, unittest.TestCase):
         conn.close()
 
     def test_migration_skipped_if_current(self):
-        """If user_version >= SCHEMA_VERSION, _run_migrations is a no-op."""
+        """Αν user_version > SCHEMA_VERSION (DB από το μέλλον), δεν γυρίζει πίσω."""
         db.setup_database()
         conn = sqlite3.connect(self._tmp_db)
         cur = conn.cursor()
@@ -212,6 +212,63 @@ class TestProducerCRUD(_TempDBMixin, unittest.TestCase):
         afms = [r[0] for r in db.fetch_all_producers()]
         self.assertEqual(afms, ['100000000', '200000000', '300000000'])
 
+    def test_fetch_all_producers_returns_6_tuple(self):
+        """fetch_all_producers: [afm, first_name, last_name, region, initial_ta, last_modified]."""
+        db.save_producer_basics('111111111', 'A', 'B', 'Αττική')
+        results = db.fetch_all_producers()
+        self.assertEqual(len(results), 1)
+        row = results[0]
+        self.assertEqual(len(row), 6)
+        self.assertEqual(row[0], '111111111')   # afm
+        self.assertEqual(row[1], 'A')            # first_name
+        self.assertEqual(row[2], 'B')            # last_name
+        self.assertEqual(row[3], 'Αττική')       # region
+        self.assertIsNone(row[4])                # initial_ta (no entries yet)
+
+    def test_fetch_all_producers_region_default_becomes_null(self):
+        """region == '--Επιλέξτε' γίνεται NULL μέσω NULLIF στο SELECT."""
+        db.save_producer_basics('111111111', 'A', 'B', '--Επιλέξτε')
+        row = db.fetch_all_producers()[0]
+        self.assertIsNone(row[3])
+
+    def test_fetch_all_producers_initial_ta_from_entries(self):
+        db.save_producer_basics('111111111', 'A', 'B', 'Αττική')
+        db.save_scenario_data('111111111', 'initial', [
+            ('111111111', 'initial', 'CAT', 'DESC', 100.0, 5.0,
+             'Συμβατικά', 0, 0, '', 500.0, 500.0, 500.0, 0, 0, 0)
+        ])
+        row = db.fetch_all_producers()[0]
+        self.assertEqual(row[4], 500.0)
+
+
+# ─── Single Producer Row ─────────────────────────────────────────────
+
+class TestFetchSingleProducerRow(_TempDBMixin, unittest.TestCase):
+
+    def setUp(self):
+        super().setUp()
+        db.setup_database()
+
+    def test_returns_6_tuple_same_shape_as_fetch_all(self):
+        db.save_producer_basics('123456789', 'A', 'B', 'Αττική')
+        row = db.fetch_single_producer_row('123456789')
+        self.assertIsNotNone(row)
+        self.assertEqual(len(row), 6)
+        self.assertEqual(row[0], '123456789')
+
+    def test_nonexistent_returns_none(self):
+        self.assertIsNone(db.fetch_single_producer_row('000000000'))
+
+    def test_matches_fetch_all_producers_row(self):
+        db.save_producer_basics('123456789', 'A', 'B', 'Αττική')
+        db.save_scenario_data('123456789', 'initial', [
+            ('123456789', 'initial', 'CAT', 'DESC', 100.0, 5.0,
+             'Συμβατικά', 0, 0, '', 500.0, 500.0, 500.0, 0, 0, 0)
+        ])
+        single = db.fetch_single_producer_row('123456789')
+        all_row = db.fetch_all_producers()[0]
+        self.assertEqual(single, all_row)
+
 
 # ─── Scenario Data (osde_entries) ────────────────────────────────────
 
@@ -240,18 +297,6 @@ class TestScenarioData(_TempDBMixin, unittest.TestCase):
         rows = db.fetch_entries('123456789', 'initial')
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0][3], 'NEW')
-
-    def test_different_scenarios_independent(self):
-        db.save_scenario_data('123456789', 'initial', [self._make_entry(cat='INIT')])
-        entry_fut = ('123456789', 'future', 'FUT', 'DESC1', 100.0, 5.0,
-                     'Συμβατικά', 0, 0, '', 500.0, 500.0, 500.0, 0, 0, 0)
-        db.save_scenario_data('123456789', 'future', [entry_fut])
-        initial = db.fetch_entries('123456789', 'initial')
-        future = db.fetch_entries('123456789', 'future')
-        self.assertEqual(len(initial), 1)
-        self.assertEqual(len(future), 1)
-        self.assertEqual(initial[0][3], 'INIT')
-        self.assertEqual(future[0][3], 'FUT')
 
     def test_multiple_entries(self):
         entries = [self._make_entry(cat='C1'), self._make_entry(cat='C2')]
@@ -294,90 +339,9 @@ class TestScenarioData(_TempDBMixin, unittest.TestCase):
         conn.close()
 
 
-# ─── Eligibility ─────────────────────────────────────────────────────
+# ─── Batch Import (web) ──────────────────────────────────────────────
 
-class TestEligibility(_TempDBMixin, unittest.TestCase):
-
-    def setUp(self):
-        super().setUp()
-        db.setup_database()
-        db.save_producer_basics('123456789', 'Test', 'User', 'Αττική')
-
-    def test_save_and_fetch_eligibility(self):
-        data = (1, 'Ναι', 'Όχι', 'Ναι', 'Ναι', 'Όχι', 'Ναι', 'Όχι', 'Ναι', 15000.0, 'ΕΠΙΛΕΞΙΜΟΣ')
-        db.save_eligibility_data('123456789', data)
-        result = db.fetch_eligibility('123456789')
-        self.assertIsNotNone(result)
-        self.assertEqual(result[0], 1)                    # q1 (INTEGER)
-        self.assertEqual(result[2], 'Όχι')                # q3
-        self.assertEqual(result[9], 15000.0)              # typical_output_val
-        self.assertEqual(result[10], 'ΕΠΙΛΕΞΙΜΟΣ')        # eligibility_result
-
-    def test_fetch_nonexistent_eligibility(self):
-        result = db.fetch_eligibility('000000000')
-        self.assertIsNone(result)
-
-    def test_save_eligibility_update(self):
-        data1 = (1, 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 10000.0, 'ΕΠΙΛΕΞΙΜΟΣ')
-        data2 = (0, 'Όχι', 'Όχι', 'Όχι', 'Όχι', 'Όχι', 'Όχι', 'Όχι', 'Όχι', 20000.0, 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
-        db.save_eligibility_data('123456789', data1)
-        db.save_eligibility_data('123456789', data2)
-        result = db.fetch_eligibility('123456789')
-        self.assertEqual(result[0], 0)                    # q1 (INTEGER)
-        self.assertEqual(result[9], 20000.0)
-        self.assertEqual(result[10], 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')    # eligibility_result
-
-
-# ─── Moria Data ──────────────────────────────────────────────────────
-
-class TestMoriaData(_TempDBMixin, unittest.TestCase):
-
-    def setUp(self):
-        super().setUp()
-        db.setup_database()
-        db.save_producer_basics('123456789', 'Test', 'User', 'Αττική')
-
-    def _make_moria_data(self, moria_val=55.0, budget=100000.0, epileximos='ΕΠΙΛΕΞΙΜΟΣ'):
-        return (
-            'Ναι', '60.00%',             # q1_1, q1_2
-            20000.0, 18000.0,             # q2_1, q2_2
-            30000.0, 'Ναι', 'Όχι', 'Ναι', # q3_1_1..q3_1_4
-            'Νέος Αγρότης 2018 ή 2021',  # q3_2
-            'Κανένα από τα παραπάνω',     # q3_3
-            'ΑΣ', 'Ναι',                 # q3_4, q3_5
-            50000.0, 10000.0,             # q4_1, q5_1
-            'Ναι', 'Όχι',               # q6_1, q7_1
-            budget, moria_val,            # budget_val, moria_val
-            epileximos                    # moria_epileximos
-        )
-
-    def test_save_and_fetch_moria(self):
-        data = self._make_moria_data()
-        db.save_moria_data('123456789', data)
-        result = db.fetch_moria('123456789')
-        self.assertIsNotNone(result)
-        self.assertEqual(result[0], 'Ναι')                # q1_1
-        self.assertEqual(result[16], 100000.0)            # budget_val
-        self.assertEqual(result[17], 55.0)                # moria_val
-        self.assertEqual(result[18], 'ΕΠΙΛΕΞΙΜΟΣ')        # moria_epileximos
-
-    def test_fetch_nonexistent_moria(self):
-        result = db.fetch_moria('000000000')
-        self.assertIsNone(result)
-
-    def test_save_moria_update(self):
-        data1 = self._make_moria_data(moria_val=40.0, epileximos='ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
-        data2 = self._make_moria_data(moria_val=70.0, epileximos='ΕΠΙΛΕΞΙΜΟΣ')
-        db.save_moria_data('123456789', data1)
-        db.save_moria_data('123456789', data2)
-        result = db.fetch_moria('123456789')
-        self.assertEqual(result[17], 70.0)
-        self.assertEqual(result[18], 'ΕΠΙΛΕΞΙΜΟΣ')
-
-
-# ─── Batch Import ────────────────────────────────────────────────────
-
-class TestBatchImport(_TempDBMixin, unittest.TestCase):
+class TestBatchImportWeb(_TempDBMixin, unittest.TestCase):
 
     def setUp(self):
         super().setUp()
@@ -392,26 +356,24 @@ class TestBatchImport(_TempDBMixin, unittest.TestCase):
                 'region': 'Αττική',
                 'rows': [
                     {'category_osde': 'CAT', 'description': 'DESC',
-                     'typical_output': '100', 'quantity': '5',
-                     'certification': 'Συμβατικά', 'trees_over_4': '',
-                     'trees_under_4': '', 'vine_over_3': '',
-                     'output_per_choice': '500', 'total_output': '500',
-                     'ta_productive': '500', 'ta_plant': '500',
-                     'ta_animal': '', 'ta_bees': ''}
+                     'quantity': '5', 'certification': 'Συμβατικά',
+                     'trees_over_4': '', 'trees_under_4': '', 'vine_over_3': ''}
                 ]
             }
         ]
-        result = db.import_producers_batch_transaction(data)
+        result = db.import_producers_batch_transaction_web(data)
         self.assertEqual(result['total_success'], 1)
         self.assertEqual(result['total_failed'], 0)
 
         producer = db.fetch_producer('111111111')
         self.assertIsNotNone(producer)
+        self.assertEqual(producer[2], 'Αττική')
         entries = db.fetch_entries('111111111', 'initial')
         self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0][3], 'CAT')
 
-    def test_import_replace_mode(self):
-        """Replace should delete old entries and insert new ones."""
+    def test_import_replace_mode_deletes_old_entries(self):
+        """_replace=True διαγράφει τις παλιές initial entries πριν εισάγει τις νέες."""
         db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
         db.save_scenario_data('111111111', 'initial', [
             ('111111111', 'initial', 'OLD', 'OLD', 100, 1, '', 0, 0, '', 100, 100, 100, 0, 0, 0)
@@ -421,113 +383,49 @@ class TestBatchImport(_TempDBMixin, unittest.TestCase):
             {
                 'afm': '111111111',
                 '_replace': True,
-                'name': 'A',
-                'surname': 'A',
+                'name': 'A', 'surname': 'A', 'region': 'Κρήτη',
                 'rows': [
                     {'category_osde': 'NEW', 'description': 'NEW',
-                     'typical_output': '200', 'quantity': '3',
-                     'certification': '', 'trees_over_4': '',
-                     'trees_under_4': '', 'vine_over_3': '',
-                     'output_per_choice': '', 'total_output': '',
-                     'ta_productive': '', 'ta_plant': '',
-                     'ta_animal': '', 'ta_bees': ''}
+                     'quantity': '3', 'certification': '',
+                     'trees_over_4': '', 'trees_under_4': '', 'vine_over_3': ''}
                 ]
             }
         ]
-        result = db.import_producers_batch_transaction(data)
+        result = db.import_producers_batch_transaction_web(data)
         self.assertEqual(result['total_success'], 1)
 
         entries = db.fetch_entries('111111111', 'initial')
         self.assertEqual(len(entries), 1)
         self.assertEqual(entries[0][3], 'NEW')
+        producer = db.fetch_producer('111111111')
+        self.assertEqual(producer[2], 'Κρήτη')
 
-    def test_import_duplicate_afm_fails(self):
-        """Importing an AFM that already exists (without _replace) should fail."""
+    def test_import_duplicate_afm_without_replace_fails(self):
+        """INSERT χωρίς _replace σε ήδη υπάρχον ΑΦΜ → UNIQUE constraint, καταγράφεται ως failed."""
         db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        data = [
-            {
-                'afm': '111111111',
-                'name': 'B',
-                'surname': 'B',
-                'rows': []
-            }
-        ]
-        result = db.import_producers_batch_transaction(data)
+        data = [{'afm': '111111111', 'name': 'B', 'surname': 'B', 'rows': []}]
+        result = db.import_producers_batch_transaction_web(data)
         self.assertEqual(result['total_failed'], 1)
-
-    def test_import_progress_callback(self):
-        calls = []
-        data = [
-            {'afm': '111111111', 'name': 'A', 'surname': 'A', 'rows': []},
-            {'afm': '222222222', 'name': 'B', 'surname': 'B', 'rows': []},
-        ]
-        db.import_producers_batch_transaction(data, progress_callback=lambda i, t: calls.append((i, t)))
-        # Should be called for each item + final
-        self.assertTrue(len(calls) >= 2)
-        self.assertEqual(calls[-1], (2, 2))
+        self.assertEqual(result['total_success'], 0)
 
     def test_import_empty_list(self):
-        result = db.import_producers_batch_transaction([])
+        result = db.import_producers_batch_transaction_web([])
         self.assertEqual(result['total_success'], 0)
         self.assertEqual(result['total_failed'], 0)
 
-    def test_import_result_has_replace_count(self):
-        """Το result dict περιλαμβάνει 'replace' με τον αριθμό των _replace."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        data = [
-            {'afm': '111111111', '_replace': True, 'name': 'A', 'surname': 'A', 'rows': []},
-            {'afm': '222222222', 'name': 'B', 'surname': 'B', 'rows': []},
-        ]
-        result = db.import_producers_batch_transaction(data)
-        self.assertIn('replace', result)
-        self.assertEqual(result['replace'], 1)
-        self.assertEqual(result['total_success'], 2)
-
-    def test_import_replace_clears_moria_eligibility_future(self):
-        """_replace καθαρίζει moria.moria_val/moria_epileximos, eligibility.eligibility_result,
-        και osde_entries.total_output του future scenario — διατηρεί όμως τις γραμμές."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        # Pre-existing μόρια & eligibility & future entry
-        db.save_moria_data('111111111', (
-            'Ναι', '50.00%', 10000.0, 10000.0,
-            5000.0, 'Ναι', 'Όχι', 'Ναι',
-            'Νέος Αγρότης 2018 ή 2021', 'Κανένα από τα παραπάνω', 'ΑΣ', 'Ναι',
-            5000.0, 5000.0, 'Ναι', 'Όχι',
-            50000.0, 60.0, 'ΕΠΙΛΕΞΙΜΟΣ'
-        ))
-        db.save_eligibility_data('111111111', (
-            1, 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι',
-            15000.0, 'ΕΠΙΛΕΞΙΜΟΣ'
-        ))
-        db.save_scenario_data('111111111', 'future', [
-            ('111111111', 'future', 'C', 'D', 100.0, 5.0, '',
-             0, 0, '', 500.0, 500.0, 500.0, 0, 0, 0)
-        ])
-
+    def test_import_calculated_fields_are_not_trusted(self):
+        """Το typical_output/output_per_choice/κλπ δεν περνάνε από το import — αποθηκεύονται NULL."""
         data = [{
-            'afm': '111111111', '_replace': True,
-            'name': 'IGNORED', 'surname': 'IGNORED',
-            'rows': [{'category_osde': 'NEW', 'description': 'NEW',
-                      'typical_output': '', 'quantity': '1',
-                      'certification': '', 'trees_over_4': '',
-                      'trees_under_4': '', 'vine_over_3': '',
-                      'output_per_choice': '', 'total_output': '',
-                      'ta_productive': '', 'ta_plant': '',
-                      'ta_animal': '', 'ta_bees': ''}]
+            'afm': '111111111', 'name': 'A', 'surname': 'A', 'region': 'Αττική',
+            'rows': [{'category_osde': 'CAT', 'description': 'DESC', 'quantity': '5',
+                      'certification': '', 'trees_over_4': '', 'trees_under_4': '', 'vine_over_3': ''}]
         }]
-        db.import_producers_batch_transaction(data)
-
-        # moria.moria_val & moria_epileximos → NULL
-        moria = db.fetch_moria('111111111')
-        self.assertIsNone(moria[17])  # moria_val
-        self.assertIsNone(moria[18])  # moria_epileximos
-        # eligibility.eligibility_result → NULL
-        elig = db.fetch_eligibility('111111111')
-        self.assertIsNone(elig[10])
-        # future osde_entries.total_output → NULL (αλλά η γραμμή υπάρχει)
-        future = db.fetch_entries('111111111', 'future')
-        self.assertEqual(len(future), 1)
-        self.assertIsNone(future[0][12])  # total_output index
+        db.import_producers_batch_transaction_web(data)
+        entries = db.fetch_entries('111111111', 'initial')
+        # entry layout: [..., typical_output(5), quantity(6), ..., output_per_choice(11), total_output(12), ...]
+        self.assertIsNone(entries[0][5])    # typical_output
+        self.assertIsNone(entries[0][11])   # output_per_choice
+        self.assertIsNone(entries[0][12])   # total_output
 
 
 # ─── Helper Functions ────────────────────────────────────────────────
@@ -575,9 +473,9 @@ class TestDeleteProducerEntries(_TempDBMixin, unittest.TestCase):
 
     def test_delete_entries_only_target_scenario(self):
         entry_initial = ('123456789', 'initial', 'C1', 'D1', 100, 5, '', 0, 0, '', 500, 500, 500, 0, 0, 0)
-        entry_future = ('123456789', 'future', 'C2', 'D2', 200, 3, '', 0, 0, '', 600, 600, 600, 0, 0, 0)
+        entry_other = ('123456789', 'other', 'C2', 'D2', 200, 3, '', 0, 0, '', 600, 600, 600, 0, 0, 0)
         db.save_scenario_data('123456789', 'initial', [entry_initial])
-        db.save_scenario_data('123456789', 'future', [entry_future])
+        db.save_scenario_data('123456789', 'other', [entry_other])
 
         conn = sqlite3.connect(self._tmp_db)
         cur = conn.cursor()
@@ -586,9 +484,22 @@ class TestDeleteProducerEntries(_TempDBMixin, unittest.TestCase):
         conn.close()
 
         initial = db.fetch_entries('123456789', 'initial')
-        future = db.fetch_entries('123456789', 'future')
+        other = db.fetch_entries('123456789', 'other')
         self.assertEqual(len(initial), 0)
-        self.assertEqual(len(future), 1)
+        self.assertEqual(len(other), 1)
+
+    def test_delete_entries_default_scenario_type(self):
+        """Default scenario_type='initial' όταν δεν περάσει ρητά."""
+        entry_initial = ('123456789', 'initial', 'C1', 'D1', 100, 5, '', 0, 0, '', 500, 500, 500, 0, 0, 0)
+        db.save_scenario_data('123456789', 'initial', [entry_initial])
+
+        conn = sqlite3.connect(self._tmp_db)
+        cur = conn.cursor()
+        db.delete_producer_entries(cur, '123456789')
+        conn.commit()
+        conn.close()
+
+        self.assertEqual(len(db.fetch_entries('123456789', 'initial')), 0)
 
 
 # ─── Last Modified timestamp ─────────────────────────────────────────
@@ -628,71 +539,22 @@ class TestLastModified(_TempDBMixin, unittest.TestCase):
         conn.close()
         self.assertEqual(ts, '2026-04-23 15:30:00')
 
-    def test_fetch_all_producers_returns_9_tuple(self):
-        """fetch_all_producers returns 9-tuple with last_modified at index 8."""
+    def test_fetch_all_producers_last_modified_at_index_5(self):
         with patch('database_manager._now_iso', return_value='2026-04-23 12:00:00'):
             db.save_producer_basics('111111111', 'A', 'B', 'Αττική')
         results = db.fetch_all_producers()
         self.assertEqual(len(results), 1)
         row = results[0]
-        self.assertEqual(len(row), 9)
         self.assertEqual(row[0], '111111111')                 # afm
-        self.assertEqual(row[8], '2026-04-23 12:00:00')       # last_modified
+        self.assertEqual(row[5], '2026-04-23 12:00:00')       # last_modified
 
-    def test_fetch_single_producer_row_returns_9_tuple(self):
-        """fetch_single_producer_row returns 9-tuple with last_modified at index 8."""
+    def test_fetch_single_producer_row_last_modified_at_index_5(self):
         with patch('database_manager._now_iso', return_value='2026-04-23 12:00:00'):
             db.save_producer_basics('111111111', 'A', 'B', 'Αττική')
         row = db.fetch_single_producer_row('111111111')
         self.assertIsNotNone(row)
-        self.assertEqual(len(row), 9)
         self.assertEqual(row[0], '111111111')
-        self.assertEqual(row[8], '2026-04-23 12:00:00')
-
-    def test_fetch_single_producer_row_nonexistent(self):
-        self.assertIsNone(db.fetch_single_producer_row('000000000'))
-
-    def _save_elig(self, afm, result):
-        data = (1, 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 'Ναι', 0.0, result)
-        db.save_eligibility_data(afm, data)
-
-    def _save_moria(self, afm, result):
-        data = ('Ναι', '0%', 0, 0, 0, 'Ναι', 'Ναι', 'Ναι',
-                'Κανένα από τα παραπάνω', 'Κανένα από τα παραπάνω', 'ΑΣ', 'Ναι',
-                0, 0, 'Ναι', 'Όχι', 0, 0, result)
-        db.save_moria_data(afm, data)
-
-    def test_combined_eligibility_both_eligible(self):
-        """eligibility=ΕΠΙΛΕΞΙΜΟΣ + moria=ΕΠΙΛΕΞΙΜΟΣ → combined=ΕΠΙΛΕΞΙΜΟΣ."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        self._save_elig('111111111', 'ΕΠΙΛΕΞΙΜΟΣ')
-        self._save_moria('111111111', 'ΕΠΙΛΕΞΙΜΟΣ')
-        row = db.fetch_single_producer_row('111111111')
-        self.assertEqual(row[7], 'ΕΠΙΛΕΞΙΜΟΣ')
-
-    def test_combined_eligibility_one_not_eligible(self):
-        """Έστω και 1 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ' → combined=ΜΗ ΕΠΙΛΕΞΙΜΟΣ."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        self._save_elig('111111111', 'ΕΠΙΛΕΞΙΜΟΣ')
-        self._save_moria('111111111', 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
-        row = db.fetch_single_producer_row('111111111')
-        self.assertEqual(row[7], 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
-
-    def test_combined_eligibility_missing_returns_empty(self):
-        """Αν λείπει είτε eligibility είτε moria → combined='' (ούτε ΜΗ ούτε ΕΠΙΛΕΞΙΜΟΣ)."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        self._save_elig('111111111', 'ΕΠΙΛΕΞΙΜΟΣ')
-        # Δεν αποθηκεύουμε moria
-        row = db.fetch_single_producer_row('111111111')
-        self.assertEqual(row[7], '')
-
-    def test_combined_eligibility_in_fetch_all(self):
-        """Το ίδιο combined logic ισχύει και στο fetch_all_producers."""
-        db.save_producer_basics('111111111', 'A', 'A', 'Αττική')
-        self._save_elig('111111111', 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
-        self._save_moria('111111111', 'ΕΠΙΛΕΞΙΜΟΣ')
-        results = db.fetch_all_producers()
-        self.assertEqual(results[0][7], 'ΜΗ ΕΠΙΛΕΞΙΜΟΣ')
+        self.assertEqual(row[5], '2026-04-23 12:00:00')
 
     def test_import_new_populates_timestamp(self):
         """New AFM import INSERTs last_modified."""
@@ -701,30 +563,31 @@ class TestLastModified(_TempDBMixin, unittest.TestCase):
             'region': 'Αττική', 'rows': []
         }]
         with patch('database_manager._now_iso', return_value='2026-04-23 09:15:00'):
-            db.import_producers_batch_transaction(data)
+            db.import_producers_batch_transaction_web(data)
         row = db.fetch_single_producer_row('111111111')
-        self.assertEqual(row[8], '2026-04-23 09:15:00')
+        self.assertEqual(row[5], '2026-04-23 09:15:00')
 
-    def test_import_replace_updates_only_timestamp(self):
-        """_replace updates last_modified but leaves first_name/last_name/region intact."""
+    def test_import_replace_updates_only_timestamp_and_basics(self):
+        """_replace ενημερώνει name/surname/region/last_modified (web version, σε αντίθεση
+        με το desktop replace που άφηνε τα βασικά στοιχεία αμετάβλητα)."""
         with patch('database_manager._now_iso', return_value='2026-01-01 08:00:00'):
             db.save_producer_basics('111111111', 'OrigName', 'OrigSurname', 'Αττική')
 
         data = [{
             'afm': '111111111', '_replace': True,
-            'name': 'IgnoredName', 'surname': 'IgnoredSurname', 'region': 'Κρήτη',
+            'name': 'NewName', 'surname': 'NewSurname', 'region': 'Κρήτη',
             'rows': []
         }]
         with patch('database_manager._now_iso', return_value='2026-04-23 14:00:00'):
-            db.import_producers_batch_transaction(data)
+            db.import_producers_batch_transaction_web(data)
 
         producer = db.fetch_producer('111111111')  # (first_name, last_name, region)
-        self.assertEqual(producer[0], 'OrigName')
-        self.assertEqual(producer[1], 'OrigSurname')
-        self.assertEqual(producer[2], 'Αττική')
+        self.assertEqual(producer[0], 'NewName')
+        self.assertEqual(producer[1], 'NewSurname')
+        self.assertEqual(producer[2], 'Κρήτη')
 
         row = db.fetch_single_producer_row('111111111')
-        self.assertEqual(row[8], '2026-04-23 14:00:00')
+        self.assertEqual(row[5], '2026-04-23 14:00:00')
 
 
 if __name__ == '__main__':
