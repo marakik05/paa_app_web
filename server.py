@@ -66,8 +66,9 @@ def delete_producer_route(afm):
 
 TA_MAPPING, TA_VALUE_MAPPING = load_excel_data(resource_path('data/ta.xlsx'))
 
-from utils.import_utils import build_canon_dicts, read_excel_file
+from utils.import_utils import build_canon_dicts, build_region_canon, read_excel_file
 _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_MAPPING)
+_CANON_REGION = build_region_canon(PERIFERIES)
 
 @app.route('/api/ta/reference')
 def ta_reference():
@@ -97,7 +98,7 @@ def import_parse():
         return jsonify({'ok': False, 'error': 'Δεν επιλέχθηκε αρχείο.'})
     try:
         producers, skipped = read_excel_file(
-            f.read(), _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS)
+            f.read(), _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS, _CANON_REGION)
     except ValueError as e:
         return jsonify({'ok': False, 'error': str(e)})
 
@@ -141,6 +142,7 @@ def export_producer(afm):
     body    = request.get_json()
     name    = body.get('name', '')
     surname = body.get('surname', '')
+    region  = body.get('region', '')
     rows    = body.get('rows', [])    # 14-element arrays από getTaRows()
     totals  = body.get('totals', {})
 
@@ -152,7 +154,7 @@ def export_producer(afm):
     ws = wb.active
     ws.title = "Τυπική Απόδοση"
     ws.append([
-        'ΑΦΜ', 'Όνομα', 'Επώνυμο',
+        'ΑΦΜ', 'Όνομα', 'Επώνυμο', 'Περιφέρεια',
         'Κατηγορία ΟΣΔΕ', 'Περιγραφή Είδους/Ποικιλίας/Ζώων',
         'Τυπική Απόδοση', 'Έκταση/Αριθμός ζώων',
         'Βιολογικά\\Ολοκλ/μένη\\ΠΟΠ/ΠΓΕ',
@@ -171,7 +173,7 @@ def export_producer(afm):
             _f(totals.get('ta_bees')),
         ] if idx == 0 else [None, None, None, None, None]
         ws.append([
-            afm, name, surname,
+            afm, name, surname, region,
             r[0] or '', r[1] or '',
             _f(r[2]),   # typical_output
             _f(r[3]),   # quantity

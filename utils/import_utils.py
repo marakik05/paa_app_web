@@ -27,6 +27,14 @@ def build_canon_dicts(ta_value_mapping):
     return canonical_pair_by_norm, canonical_cat_by_norm, valid_cats_cache, valid_descs_cache
 
 
+def build_region_canon(periferies):
+    """Reverse-lookup norm(region) → canonical region, για canonicalization/validation."""
+    canonical_region_by_norm = {}
+    for region in periferies:
+        canonical_region_by_norm[norm(region)] = region
+    return canonical_region_by_norm
+
+
 def _canonicalize_entry_row(entry_row, canonical_pair_by_norm, canonical_cat_by_norm):
     """Αντικαθιστά cat/desc με κανονικά αν ταιριάζουν normalized. Mutates in place."""
     cat = (entry_row.get('category_osde') or '').strip()
@@ -93,7 +101,7 @@ def _validate_import_row(entry_row, valid_cats_cache, valid_descs_cache):
 
 
 def read_excel_file(file_bytes, canonical_pair_by_norm, canonical_cat_by_norm,
-                    valid_cats_cache, valid_descs_cache):
+                    valid_cats_cache, valid_descs_cache, canonical_region_by_norm):
     """Διαβάζει xlsx bytes, επιστρέφει (import_data, skipped_afms). Raises ValueError σε σφάλμα."""
     if file_bytes[:2] != b'PK':
         raise ValueError("Το αρχείο δεν είναι έγκυρο Excel (.xlsx).")
@@ -101,9 +109,9 @@ def read_excel_file(file_bytes, canonical_pair_by_norm, canonical_cat_by_norm,
     wb = None
     try:
         wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
-        if "TA Αρχικής" not in wb.sheetnames:
-            raise ValueError("Δεν βρέθηκε το φύλλο 'TA Αρχικής' στο αρχείο!")
-        ws = wb["TA Αρχικής"]
+        if "Τυπική Απόδοση" not in wb.sheetnames:
+            raise ValueError("Δεν βρέθηκε το φύλλο 'Τυπική Απόδοση' στο αρχείο!")
+        ws = wb["Τυπική Απόδοση"]
 
         headers = [' '.join(str(c.value).split()) if c.value else '' for c in ws[1]]
 
@@ -130,9 +138,11 @@ def read_excel_file(file_bytes, canonical_pair_by_norm, canonical_cat_by_norm,
                 col_map['trees_under_4'] = i
             elif 'αμπέλι>3' in h or 'αμπέλι >3' in h or 'vine_over_3' in h:
                 col_map['vine_over_3'] = i
+            elif 'περιφέρεια' in h or 'region' in h:
+                col_map['region'] = i
 
         REQUIRED = {
-            'afm': "ΑΦΜ", 'name': "Όνομα", 'surname': "Επώνυμο",
+            'afm': "ΑΦΜ", 'name': "Όνομα", 'surname': "Επώνυμο", 'region': "Περιφέρεια",
             'category_osde': "Κατηγορία ΟΣΔΕ", 'description': "Περιγραφή",
             'quantity': "Έκταση/Αριθμός ζώων", 'certification': "Βιολογικά",
             'trees_over_4': "Δένδρα >=4 ετών", 'trees_under_4': "Δένδρα <4 ετών",
@@ -158,11 +168,15 @@ def read_excel_file(file_bytes, canonical_pair_by_norm, canonical_cat_by_norm,
                 skipped_afms.append(afm)
                 continue
             if afm not in afm_groups:
+                raw_region = get_cell(row, 'region') or '--Επιλέξτε'
+                canonical_region = canonical_region_by_norm.get(norm(raw_region))
+                if canonical_region is None:
+                    raise ValueError("Μη έγκυρη περιφέρεια στο αρχείο.")
                 afm_groups[afm] = {
                     'afm': afm,
                     'name': get_cell(row, 'name'),
                     'surname': get_cell(row, 'surname'),
-                    'region': '--Επιλέξτε',
+                    'region': canonical_region,
                     'rows': [],
                 }
             entry_row = {

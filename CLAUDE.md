@@ -186,20 +186,21 @@ _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_
 ### Import (`/api/import/parse` + `/api/import/execute`)
 
 - Format: **xlsx μόνο** (όχι CSV)
-- Φόρτωση: producer info + initial TA (sheet "TA Αρχικής")
+- Φόρτωση: producer info (ΑΦΜ/Όνομα/Επώνυμο/**Περιφέρεια**) + initial TA (sheet "Τυπική Απόδοση")
 - Magic-bytes check: πρώτα 2 bytes πρέπει να είναι `PK`
 - Canonicalization → `_canonicalize_entry_row()` (διορθώνει γραφή ακόμα και με διαφορές σε case/τόνους)
 - Validation → `_validate_import_row()` (raises `ValueError`)
+- **Περιφέρεια**: υποχρεωτική στήλη ("Περιφέρεια"/"region"). Τιμή της κάθε ομάδας ΑΦΜ ελέγχεται norm-based έναντι `build_region_canon(PERIFERIES)` (`utils/import_utils.py`) — αν δεν ταιριάζει με καμία επιλογή του `district`, raises `ValueError` (το αρχείο θεωρείται μη έγκυρο). Κενό κελί → `"--Επιλέξτε"` (έγκυρο, μέλος του `PERIFERIES`)
 - Conflicts → `ImportConflictDialog` modal στο frontend (radio buttons ανά ΑΦΜ)
-- Αποφάσεις: `replace` (διαγράφει `osde_entries` + ανανεώνει `last_modified`) ή `skip`
+- Αποφάσεις: `replace` (διαγράφει `osde_entries` + ενημερώνει **name, surname, region** + `last_modified`) ή `skip`
 - Μετά από import: καθαρισμός AFM/name/surname/district inputs + `lockTaSection()`
 - **Calculated fields ΔΕΝ εισάγονται** — πάντα ξαναυπολογίζονται
 
 ### Export (`POST /api/producer/<afm>/export`)
 
 - **Διαβάζει ΠΑΝΤΑ από request body** (όχι από DB) — ο χρήστης μπορεί να εξάγει αναποθήκευτα δεδομένα
-- JS στέλνει: `{name, surname, rows: getTaRows(), totals: {total_ta, ta_prod, ta_plant, ta_animal, ta_bees}}`
-- Excel sheet "TA Αρχικής" με 17 στήλες
+- JS στέλνει: `{name, surname, region, rows: getTaRows(), totals: {total_ta, ta_prod, ta_plant, ta_animal, ta_bees}}`
+- Excel sheet "Τυπική Απόδοση" με 18 στήλες — "Περιφέρεια" δίπλα στο "Επώνυμο", επαναλαμβάνεται σε κάθε γραμμή (ίδια λογική με ΑΦΜ/Όνομα/Επώνυμο)
 - Τα αθροίσματα (totals) γράφονται μόνο στη γραμμή 2 (πρώτη data row), υπόλοιπες κενές
 
 ---
@@ -325,7 +326,6 @@ Pure-Python functions χωρίς Qt dependency.
 ## Avoid
 
 - Μην εισάγεις calculated fields στο import (ΤΑ, totals) — ξαναυπολογίζονται πάντα
-- Μην ενημερώνεις name/surname/region κατά το import replace — μόνο `osde_entries` + `last_modified`
 - Μην προσθέτεις timestamp logic στο `save_scenario_data` — το `save_producer_basics` το διαχειρίζεται
 - Μην χρησιμοποιείς `position: absolute` μέσα στον πίνακα για dropdowns — χρησιμοποίησε portal pattern
 - Μην κάνεις API call σε κάθε πάτημα πλήκτρου στα φίλτρα — φιλτράρισμα client-side μέσω cache

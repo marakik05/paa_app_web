@@ -532,7 +532,9 @@ def import_producers_batch_transaction_web(producers_data):
                 if data.get('_replace'):
                     delete_producer_entries(cursor, afm, 'initial')
                     cursor.execute(
-                        "UPDATE producers SET last_modified=? WHERE afm=?", (ts, afm))
+                        "UPDATE producers SET first_name=?, last_name=?, region=?, last_modified=? WHERE afm=?",
+                        (data.get('name', ''), data.get('surname', ''),
+                         data.get('region', '--Επιλέξτε'), ts, afm))
                 else:
                     cursor.execute(
                         "INSERT INTO producers (afm,first_name,last_name,region,last_modified)"

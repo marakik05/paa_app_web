@@ -34,6 +34,7 @@ async function handleDeleteClick(afm) {
                 document.getElementById('AFM').value     = '';
                 document.getElementById('name').value    = '';
                 document.getElementById('surname').value = '';
+                document.getElementById('district').selectedIndex = 0;
                 markClean();
                 lockTaSection();;
             }

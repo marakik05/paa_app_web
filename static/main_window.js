@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payload = {
             name:    document.getElementById('name').value,
             surname: document.getElementById('surname').value,
+            region:  document.getElementById('district').value,
             rows:    getTaRows(),
             totals: {
                 total_ta:  document.getElementById('total-ta').textContent     || '',
