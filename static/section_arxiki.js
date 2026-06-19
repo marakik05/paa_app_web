@@ -36,7 +36,7 @@ async function handleDeleteClick(afm) {
                 document.getElementById('surname').value = '';
                 document.getElementById('district').selectedIndex = 0;
                 markClean();
-                lockTaSection();;
+                lockTaSection();
             }
         });
 }

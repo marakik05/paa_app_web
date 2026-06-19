@@ -231,6 +231,7 @@ DB path: `%LOCALAPPDATA%\OsdeCalculatorApp_web\osde_app_web.db`
 | `fetch_producer(afm)` | Returns `(name, surname, region)` or None |
 | `fetch_entries(afm, scenario)` | ΤΑ γραμμές για scenario |
 | `fetch_all_producers()` | Όλοι οι παραγωγοί ORDER BY afm ASC → `[afm, first_name, last_name, region, initial_ta, last_modified]` |
+| `fetch_single_producer_row(afm)` | Ίδιο shape με μία γραμμή της `fetch_all_producers()` για ένα ΑΦΜ (ορίζεται, δεν καλείται ακόμα από `server.py`) |
 | `delete_producer(afm)` | Cascade διαγραφή |
 | `delete_producer_entries(cursor, afm, scenario_type)` | Helper για import replace |
 | `import_producers_batch_transaction_web(producers_data)` | Batch import — mini-transaction ανά ΑΦΜ |

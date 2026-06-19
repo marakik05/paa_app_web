@@ -79,8 +79,10 @@ class _CanonMixin:
         return path
 
     def _read(self, path):
+        with open(path, "rb") as f:
+            file_bytes = f.read()
         return read_excel_file(
-            open(path, "rb").read(),
+            file_bytes,
             self.canon_pair, self.canon_cat, self.valid_cats, self.valid_descs,
             self.canon_region,
         )
