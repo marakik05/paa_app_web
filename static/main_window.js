@@ -18,14 +18,16 @@ document.addEventListener('DOMContentLoaded', () => {
     fetch('/api/regions')
         .then(res => res.json())
         .then(regions => {
-            const select = document.getElementById('district');
-            select.innerHTML = '';
-            regions.forEach(region => {
-                const option = document.createElement('option');
-                option.value = region;
-                option.textContent = region;
-                select.appendChild(option);
-            });
+            [document.getElementById('district'), document.getElementById('modal-district')]
+                .forEach(select => {
+                    select.innerHTML = '';
+                    regions.forEach(region => {
+                        const option = document.createElement('option');
+                        option.value = region;
+                        option.textContent = region;
+                        select.appendChild(option);
+                    });
+                });
         });
 
     // Ενεργοποίηση/απενεργοποίηση κουμπιών ανά σελίδα
@@ -57,7 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
     updatePageButtons('arxiki');
 
     // ─── Import ───
-    document.getElementById('import').addEventListener('click', () => {
+    document.getElementById('import').addEventListener('click', async () => {
+        if (_hasUnsavedChanges &&
+            !(await showConfirmModal('Υπάρχουν μη αποθηκευμένες αλλαγές που θα διαγραφούν με την εισαγωγή. Θέλετε να συνεχίσετε;'))) {
+            return;
+        }
         document.getElementById('import-file-input').value = '';
         document.getElementById('import-file-input').click();
     });
@@ -217,6 +223,7 @@ document.getElementById('new-record').addEventListener('click', () => {
     document.getElementById('modal-afm').value     = '';
     document.getElementById('modal-name').value    = '';
     document.getElementById('modal-surname').value = '';
+    document.getElementById('modal-district').selectedIndex = 0;
     document.getElementById('modal-new-record').style.display = 'block';
     document.getElementById('modal-afm').focus();
 });
@@ -238,6 +245,7 @@ document.getElementById('modal-save').addEventListener('click', () => {
     const afm     = document.getElementById('modal-afm').value.trim();
     const name    = document.getElementById('modal-name').value.trim();
     const surname = document.getElementById('modal-surname').value.trim();
+    const region  = document.getElementById('modal-district').value;
 
     if (afm.length !== 9) { showToast('Ο ΑΦΜ πρέπει να είναι 9 ψηφία.'); return; }
     if (!name)    { showToast('Παρακαλώ συμπληρώστε Όνομα.'); return; }
@@ -250,7 +258,7 @@ document.getElementById('modal-save').addEventListener('click', () => {
             return fetch(`/api/producer/${afm}/save`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, surname, region: '--Επιλέξτε' })
+                body: JSON.stringify({ name, surname, region })
             });
         })
         .then(r => r && r.json())

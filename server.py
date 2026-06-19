@@ -150,7 +150,7 @@ def export_producer(afm):
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = "TA Αρχικής"
+    ws.title = "Τυπική Απόδοση"
     ws.append([
         'ΑΦΜ', 'Όνομα', 'Επώνυμο',
         'Κατηγορία ΟΣΔΕ', 'Περιγραφή Είδους/Ποικιλίας/Ζώων',
