@@ -276,7 +276,22 @@ function buildSearchableCombo(options, initialValue) {
 
     wrapper.appendChild(input);
     wrapper.appendChild(arrow);
+
+    // references για cleanup (βλ. destroyCombo) — αποτρέπει memory leak από ορφανά
+    // portal dropdowns στο body και πολλαπλασιαζόμενους scroll listeners
+    wrapper._comboDropdown = dropdown;
+    wrapper._comboOnScroll = onScroll;
+
     return wrapper;
+}
+
+// Αφαιρεί το portal dropdown από το body + τον scroll listener ενός combo cell.
+// Πρέπει να καλείται πριν από κάθε innerHTML='' ή tr.remove() που πετάει ένα .combo-wrapper.
+function destroyCombo(td) {
+    const wrapper = td.querySelector('.combo-wrapper');
+    if (!wrapper) return;
+    if (wrapper._comboDropdown) wrapper._comboDropdown.remove();
+    if (wrapper._comboOnScroll) window.removeEventListener('scroll', wrapper._comboOnScroll, true);
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -306,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (td.dataset.col === '0') {
             const cells = td.closest('tr').querySelectorAll('td');
             const descs = taMapping[e.target.value] || [];
+            destroyCombo(cells[1]);
             cells[1].innerHTML = '';
             cells[1].appendChild(buildSearchableCombo(['--Επιλέξτε', ...descs], '--Επιλέξτε'));
         }
@@ -324,7 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
     tbody.addEventListener('click', (e) => {
         if (e.target.classList.contains('delete-row-btn')) {
             markDirty();
-            e.target.closest('tr').remove();
+            const tr = e.target.closest('tr');
+            const cells = tr.querySelectorAll('td');
+            destroyCombo(cells[0]);
+            destroyCombo(cells[1]);
+            tr.remove();
             recalcAll();
         }
     });
@@ -340,7 +360,13 @@ document.addEventListener('DOMContentLoaded', () => {
 function lockTaSection() {
     document.getElementById('ta-fieldset').disabled = true;
     document.querySelector('.navbar a[data-page="ta"]').classList.add('nav-disabled');
-    document.querySelector('#ta-table tbody').innerHTML = '';
+    const tbody = document.querySelector('#ta-table tbody');
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        destroyCombo(cells[0]);
+        destroyCombo(cells[1]);
+    });
+    tbody.innerHTML = '';
     ['total-ta','total-ta-sum','total-ta-plant','total-ta-animal','total-ta-bee-silk']
         .forEach(id => { document.getElementById(id).textContent = ''; });
 
@@ -357,28 +383,38 @@ function unlockTaSection() {
     document.querySelector('.navbar a[data-page="ta"]').classList.remove('nav-disabled');
 }
 
+// Helpers: parse που επιστρέφει null μόνο σε NaN (0 παραμένει 0, δεν γίνεται null)
+function numOrNull(v) {
+    const n = parseFloat(String(v).replace(',', '.'));
+    return Number.isNaN(n) ? null : n;
+}
+function intOrNull(v) {
+    const n = parseInt(v, 10);
+    return Number.isNaN(n) ? null : n;
+}
+
 // Διαβάζει τις γραμμές του πίνακα → 14-element arrays για αποθήκευση
 function getTaRows() {
     const rows = Array.from(document.querySelectorAll('#ta-table tbody tr'));
     if (rows.length === 0) return [];
-    const total_output  = parseFloat(document.getElementById('total-ta').textContent) || null;
-    const ta_productive = parseFloat(document.getElementById('total-ta-sum').textContent) || null;
-    const ta_plant      = parseFloat(document.getElementById('total-ta-plant').textContent) || null;
-    const ta_animal     = parseFloat(document.getElementById('total-ta-animal').textContent) || null;
-    const ta_bees       = parseFloat(document.getElementById('total-ta-bee-silk').textContent) || null;
+    const total_output  = numOrNull(document.getElementById('total-ta').textContent);
+    const ta_productive = numOrNull(document.getElementById('total-ta-sum').textContent);
+    const ta_plant      = numOrNull(document.getElementById('total-ta-plant').textContent);
+    const ta_animal     = numOrNull(document.getElementById('total-ta-animal').textContent);
+    const ta_bees       = numOrNull(document.getElementById('total-ta-bee-silk').textContent);
 
     return rows.map(tr => {
         const cells = tr.querySelectorAll('td');
         return [
             cells[0].querySelector('.combo-input').value,
             cells[1].querySelector('.combo-input').value,
-            parseFloat(cells[2].textContent) || null,
-            parseFloat(cells[3].querySelector('input').value) || null,
+            numOrNull(cells[2].textContent),
+            numOrNull(cells[3].querySelector('input').value),
             cells[4].querySelector('select').value,
-            parseInt(cells[5].querySelector('input').value, 10) || null,
-            parseInt(cells[6].querySelector('input').value, 10) || null,
+            intOrNull(cells[5].querySelector('input').value),
+            intOrNull(cells[6].querySelector('input').value),
             cells[7].querySelector('select').value,
-            parseFloat(cells[8].textContent) || null,
+            numOrNull(cells[8].textContent),
             total_output, ta_productive, ta_plant, ta_animal, ta_bees
         ];
     });
@@ -387,6 +423,11 @@ function getTaRows() {
 // Γεμίζει τον πίνακα από DB rows (17-element arrays από fetch_entries)
 function loadTaTable(rows) {
     const tbody = document.querySelector('#ta-table tbody');
+    tbody.querySelectorAll('tr').forEach(tr => {
+        const cells = tr.querySelectorAll('td');
+        destroyCombo(cells[0]);
+        destroyCombo(cells[1]);
+    });
     tbody.innerHTML = '';
     rows.forEach(r => {
         const tr = buildTaRow();
@@ -395,6 +436,7 @@ function loadTaTable(rows) {
         const desc = r[4] || '--Επιλέξτε';
         cells[0].querySelector('.combo-input').value = cat;
         const descs = taMapping[cat] || [];
+        destroyCombo(cells[1]);
         cells[1].innerHTML = '';
         cells[1].appendChild(buildSearchableCombo(['--Επιλέξτε', ...descs], desc));
         cells[3].querySelector('input').value  = r[6] != null ? String(r[6]) : '';

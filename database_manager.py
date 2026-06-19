@@ -110,7 +110,7 @@ def setup_database():
             certification TEXT,
             trees_over_4 INTEGER, 
             trees_under_4 INTEGER, 
-            vine_over_3 INTEGER,
+            vine_over_3 TEXT,
             output_per_choice REAL, 
             total_output REAL,
             ta_productive REAL, 
@@ -500,7 +500,8 @@ def to_int_or_empty(value):
     if value == '' or value is None or value == 'NULL':
         return None
     try:
-        return int(value)
+        f = float(str(value).replace(',', '.'))
+        return int(f) if f == int(f) else None
     except (ValueError, TypeError):
         return None
 
