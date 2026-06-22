@@ -1,10 +1,18 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, send_file
+import io
 import os
-from database_manager import fetch_producer, setup_database, fetch_all_producers, delete_producer
+import openpyxl
+from database_manager import (
+    fetch_producer, setup_database, fetch_all_producers, delete_producer,
+    fetch_entries, save_producer_basics, save_scenario_data,
+    import_producers_batch_transaction_web,
+)
 from utils.excel_loader import load_excel_data, resource_path, PERIFERIES
 from utils.ta_calculations import calc_row, calc_totals, to_float, to_int
+from utils.import_utils import build_canon_dicts, build_region_canon, read_excel_file
 
 app = Flask(__name__, template_folder='templates', static_folder='static')
+app.config['MAX_CONTENT_LENGTH'] = 100 * 1024 * 1024  # 100MB — guard για oversized import uploads
 setup_database()
 
 @app.route('/')
@@ -25,7 +33,6 @@ def producer_exists(afm):
 #κουμπί φόρτωσης
 @app.route('/api/producer/<afm>/full')
 def get_producer_full(afm):
-    from database_manager import fetch_producer, fetch_entries
     producer = fetch_producer(afm)
     if not producer:
         return jsonify({'found': False})
@@ -39,8 +46,6 @@ def get_producer_full(afm):
 #save κουμπί
 @app.route('/api/producer/<afm>/save', methods=['POST'])
 def save_producer(afm):
-    from database_manager import (save_producer_basics, save_scenario_data)
-                                  
     body = request.get_json()
     save_producer_basics(afm, body['name'], body['surname'], body['region'])
 
@@ -66,7 +71,6 @@ def delete_producer_route(afm):
 
 TA_MAPPING, TA_VALUE_MAPPING = load_excel_data(resource_path('data/ta.xlsx'))
 
-from utils.import_utils import build_canon_dicts, build_region_canon, read_excel_file
 _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_MAPPING)
 _CANON_REGION = build_region_canon(PERIFERIES)
 
@@ -116,7 +120,6 @@ def import_parse():
 
 @app.route('/api/import/execute', methods=['POST'])
 def import_execute():
-    from database_manager import import_producers_batch_transaction_web
     body = request.get_json()
     producers = body.get('producers', [])
     decisions = body.get('decisions', {})
@@ -129,16 +132,35 @@ def import_execute():
             p = dict(p, _replace=True)
         all_data.append(p)
 
+    # Calculated fields  — υπολογίζονται εδώ server-side με τις ίδιες pure functions που χρησιμοποιεί το /api/ta/recalculate.
+    for p in all_data:
+        region = p.get('region', '')
+        rows = p.get('rows', [])
+        rows_calc = [
+            calc_row(
+                TA_VALUE_MAPPING, region,
+                r.get('category_osde', ''), r.get('description', ''),
+                to_float(r.get('quantity')), to_int(r.get('trees_over_4')),
+                to_int(r.get('trees_under_4')), r.get('vine_over_3', '')
+            )
+            for r in rows
+        ]
+        totals = calc_totals(rows_calc)
+        for r, c in zip(rows, rows_calc):
+            r['typical_output'] = c['typical_output']
+            r['output_per_choice'] = c['output_per_choice']
+            r['total_output'] = totals['total_output']
+            r['ta_productive'] = totals['ta_productive']
+            r['ta_plant'] = totals['ta_plant']
+            r['ta_animal'] = totals['ta_animal']
+            r['ta_bees'] = totals['ta_bees']
+
     result = import_producers_batch_transaction_web(all_data)
     return jsonify({'ok': True, **result})
 
 
 @app.route('/api/producer/<afm>/export', methods=['POST'])
 def export_producer(afm):
-    import io
-    import openpyxl
-    from flask import send_file
-
     body    = request.get_json()
     name    = body.get('name', '')
     surname = body.get('surname', '')
@@ -191,7 +213,7 @@ def export_producer(afm):
     return send_file(
         buf,
         as_attachment=True,
-        download_name=f'TA_{afm}.xlsx',
+        download_name=f'{afm}_ΤΑ.xlsx',
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
 

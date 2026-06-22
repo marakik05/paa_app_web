@@ -16,7 +16,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Γέμισμα combo περιφέρειας από το backend (≈ combo_periferia.addItems)
     fetch('/api/regions')
-        .then(res => res.json())
+        .then(res => {
+            if (!res.ok) throw new Error('http_error');
+            return res.json();
+        })
         .then(regions => {
             [document.getElementById('district'), document.getElementById('modal-district')]
                 .forEach(select => {
@@ -28,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         select.appendChild(option);
                     });
                 });
-        });
+        })
+        .catch(() => showToast('Σφάλμα φόρτωσης περιφερειών.'));
 
     // Ενεργοποίηση/απενεργοποίηση κουμπιών ανά σελίδα
     function updatePageButtons(targetPage) {
@@ -73,7 +77,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const fd = new FormData();
         fd.append('file', this.files[0]);
         fetch('/api/import/parse', { method: 'POST', body: fd })
-            .then(r => r.json())
+            .then(r => {
+                if (!r.ok) throw new Error('http_error');
+                return r.json();
+            })
             .then(data => {
                 if (!data.ok) { showToast(data.error || 'Σφάλμα εισαγωγής.'); return; }
                 _importNewData = data.new_data;
@@ -83,7 +90,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     _showConflictModal(data.new_data, data.conflicts);
                 }
-            });
+            })
+            .catch(() => showToast('Σφάλμα επικοινωνίας με τον server.'));
     });
 
     // ─── Export ───
@@ -110,7 +118,10 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
         })
-        .then(r => r.blob())
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.blob();
+        })
         .then(blob => {
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -118,7 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
             a.download = `${afm}_ΤΑ.xlsx`;
             a.click();
             URL.revokeObjectURL(url);
-        });
+        })
+        .catch(() => showToast('Σφάλμα εξαγωγής αρχείου.'));
     });
 
 
@@ -139,14 +151,20 @@ document.addEventListener('DOMContentLoaded', () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) throw new Error('http_error');
+        return r.json();
+    })
     .then(data => {
         if (data.ok) {
             showToast('Επιτυχής αποθήκευση!', 'success');
             markClean();
             loadProducersTable();
+        } else {
+            showToast('Σφάλμα κατά την αποθήκευση.');
         }
-    });
+    })
+    .catch(() => showToast('Σφάλμα επικοινωνίας με τον server.'));
 });
 
     // Προειδοποίηση κλεισίματος καρτέλας/παραθύρου με μη-αποθηκευμένες αλλαγές
@@ -165,7 +183,10 @@ function _executeImport(decisions, producers) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ producers, decisions })
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) throw new Error('http_error');
+        return r.json();
+    })
     .then(data => {
         if (data.ok) {
             loadProducersTable();
@@ -180,8 +201,11 @@ function _executeImport(decisions, producers) {
                 (data.total_failed ? ` (${data.total_failed} σφάλματα)` : '') + '.',
                 'success'
             );
+        } else {
+            showToast('Σφάλμα κατά την εισαγωγή.');
         }
-    });
+    })
+    .catch(() => showToast('Σφάλμα επικοινωνίας με τον server.'));
 }
 
 function _showConflictModal(newData, conflicts) {
@@ -253,21 +277,29 @@ document.getElementById('modal-save').addEventListener('click', () => {
     if (!surname) { showToast('Παρακαλώ συμπληρώστε Επώνυμο.'); return; }
 
     fetch(`/api/producer/${afm}/exists`)
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.json();
+        })
         .then(({ exists }) => {
             if (exists) { showToast('Παραγωγός με αυτό το ΑΦΜ υπάρχει ήδη.'); return; }
             return fetch(`/api/producer/${afm}/save`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ name, surname, region })
+            }).then(r => {
+                if (!r.ok) throw new Error('http_error');
+                return r.json();
             });
         })
-        .then(r => r && r.json())
         .then(data => {
             if (data && data.ok) {
                 closeModal();
                 loadProducersTable();
                 showToast('Ο παραγωγός αποθηκεύτηκε!', 'success');
+            } else if (data) {
+                showToast('Σφάλμα κατά την αποθήκευση.');
             }
-        });
+        })
+        .catch(() => showToast('Σφάλμα επικοινωνίας με τον server.'));
 });

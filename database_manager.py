@@ -553,13 +553,18 @@ def import_producers_batch_transaction_web(producers_data):
                     ''', (
                         afm, 'initial',
                         entry.get('category_osde', ''), entry.get('description', ''),
-                        None,
+                        to_float_or_empty(entry.get('typical_output', '')),
                         to_float_or_empty(entry.get('quantity', '')),
                         entry.get('certification', ''),
                         to_int_or_empty(entry.get('trees_over_4', '')),
                         to_int_or_empty(entry.get('trees_under_4', '')),
                         entry.get('vine_over_3', ''),
-                        None, None, None, None, None, None
+                        to_float_or_empty(entry.get('output_per_choice', '')),
+                        to_float_or_empty(entry.get('total_output', '')),
+                        to_float_or_empty(entry.get('ta_productive', '')),
+                        to_float_or_empty(entry.get('ta_plant', '')),
+                        to_float_or_empty(entry.get('ta_animal', '')),
+                        to_float_or_empty(entry.get('ta_bees', '')),
                     ))
                 cursor.execute("COMMIT")
                 success.append(afm)
@@ -572,65 +577,3 @@ def import_producers_batch_transaction_web(producers_data):
 
         
 
-# def save_osde_entry(afm, scenario_type, category_osde, description, typical_output,
-#                     quantity, certification, trees_over_4, trees_under_4, vine_over_3,
-#                     output_per_choice, total_output, ta_productive, ta_plant, 
-#                     ta_animal, ta_bees):
-#     """Αποθήκευση ΜΙΑΣ γραμμής στον πίνακα osde_entries"""
-#     conn = sqlite3.connect(DB_PATH)
-#     cursor = conn.cursor()
-    
-#     try:
-#         cursor.execute("PRAGMA foreign_keys = ON;")
-        
-#         def to_float_or_none(value):
-#             """Μετατροπή σε float ή empty string"""
-#             if value == '' or value is None or value == 'NULL':
-#                 return ''
-#             try:
-#                 return float(value)
-#             except ValueError:
-#                 return None
-            
-#         def to_int_or_none(value):
-#             """Μετατροπή σε int ή empty string"""
-#             if value == '' or value is None or value=='NULL':
-#                 return ''
-#             try:
-#                 return int(value)
-#             except ValueError:
-#                 return ''
-        
-#         cursor.execute('''
-#             INSERT INTO osde_entries (
-#                 producer_afm, scenario_type, category_osde, description, 
-#                 typical_output, quantity, certification, trees_over_4, 
-#                 trees_under_4, vine_over_3, output_per_choice, total_output,
-#                 ta_productive, ta_plant, ta_animal, ta_bees
-#             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-#         ''', (
-#             afm,
-#             scenario_type,
-#             category_osde,
-#             description,
-#             to_float_or_none(typical_output),
-#             to_float_or_none(quantity),
-#             certification,
-#             to_int_or_none(trees_over_4),
-#             to_int_or_none(trees_under_4),
-#             vine_over_3,  # Text: "Ναι", "Όχι", or ""
-#             to_float_or_none(output_per_choice),
-#             to_float_or_none(total_output),
-#             to_float_or_none(ta_productive),
-#             to_float_or_none(ta_plant),
-#             to_float_or_none(ta_animal),
-#             to_float_or_none(ta_bees)
-#         ))
-        
-#         conn.commit()
-#         return True
-#     except Exception as e:
-#         print(f"Database Error: {e}")
-#         return False
-#     finally:
-#       conn.close()

@@ -141,7 +141,10 @@ function recalcAll() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
     })
-    .then(r => r.json())
+    .then(r => {
+        if (!r.ok) throw new Error('http_error');
+        return r.json();
+    })
     .then(data => {
         // ενημέρωση κάθε γραμμής
         rows.forEach((tr, i) => {
@@ -189,7 +192,8 @@ function recalcAll() {
             t.ta_animal !== null ? formatNumber(t.ta_animal) : '';
         document.getElementById('total-ta-bee-silk').textContent =
             t.ta_bees !== null ? formatNumber(t.ta_bees) : '';
-    });
+    })
+    .catch(() => showToast('Σφάλμα επανυπολογισμού ΤΑ.'));
 }
 
 function buildSearchableCombo(options, initialValue) {
@@ -298,8 +302,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. φόρτωση κατηγοριών/περιγραφών από server
     fetch('/api/ta/reference')
-        .then(r => r.json())
-        .then(data => { taMapping = data.mapping; });
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.json();
+        })
+        .then(data => { taMapping = data.mapping; })
+        .catch(() => showToast('Σφάλμα φόρτωσης κατηγοριών ΟΣΔΕ.'));
 
     // 2. κουμπί "Προσθήκη"
     document.getElementById('add-row').addEventListener('click', () => {

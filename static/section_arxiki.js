@@ -25,7 +25,10 @@ async function handleEditClick(afm) {
 async function handleDeleteClick(afm) {
     if (!(await showConfirmModal(`Επιθυμείτε τη διαγραφή παραγωγού με ΑΦΜ ${afm};`))) return;
     fetch(`/api/producer/${afm}`, { method: 'DELETE' })
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.json();
+        })
         .then(data => {
             if (!data.ok) { showToast('Σφάλμα κατά τη διαγραφή.'); return; }
             showToast('Ο παραγωγός διαγράφηκε.', 'success');
@@ -38,13 +41,17 @@ async function handleDeleteClick(afm) {
                 markClean();
                 lockTaSection();
             }
-        });
+        })
+        .catch(() => showToast('Σφάλμα επικοινωνίας με τον server.'));
 }
 
 // Σύνάρτηση φόρτωσης δεδομένων παραγωγού στην φόρμα
 function loadProducer(afm) {
     fetch(`/api/producer/${afm}/full`)
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.json();
+        })
         .then(data => {
             if (!data.found) { showToast('Το ΑΦΜ δεν βρέθηκε στη βάση.'); return; }
             document.getElementById('name').value     = data.name;
@@ -53,7 +60,8 @@ function loadProducer(afm) {
             loadTaTable(data.initial_rows || []);
             markClean();  // φρέσκα φορτωμένα δεδομένα → καθαρή κατάσταση
             showToast('Τα δεδομένα φορτώθηκαν!', 'success');
-        });
+        })
+        .catch(() => showToast('Σφάλμα φόρτωσης δεδομένων παραγωγού.'));
 }
 
 // ─── Helpers μορφοποίησης για τον πίνακα της αρχικής ───
@@ -127,11 +135,15 @@ function _renderTable() {
 // ─── Γέμισμα πίνακα συγκεντρωτικών εγγραφών (≈ load_producers) ───
 function loadProducersTable() {
     fetch('/api/producers')
-        .then(r => r.json())
+        .then(r => {
+            if (!r.ok) throw new Error('http_error');
+            return r.json();
+        })
         .then(rows => {
             _allProducers = rows;
             _renderTable();
-        });
+        })
+        .catch(() => showToast('Σφάλμα φόρτωσης πίνακα παραγωγών.'));
 }
 
 // Λογική για την Αρχική Σελίδα
