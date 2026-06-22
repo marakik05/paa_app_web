@@ -137,7 +137,7 @@ _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_
 | `recalcAll()` | POST στο `/api/ta/recalculate` → ενημερώνει cols 2, 8, tfoot, lock states |
 | `getTaRows()` | Διαβάζει όλες τις γραμμές από DOM → 14-element arrays |
 | `loadTaTable(rows)` | Γεμίζει πίνακα από DB rows (17-element arrays από `fetch_entries`) |
-| `lockTaSection()` | Disabled fieldset + nav-disabled + καθαρισμός δεδομένων |
+| `lockTaSection()` | Disabled fieldset + nav-disabled + disabled name/surname/district + καθαρισμός δεδομένων |
 | `unlockTaSection()` | Αντίστροφο του lock |
 
 ### `getTaRows()` layout (14 στοιχεία ανά γραμμή)

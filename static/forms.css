@@ -44,7 +44,9 @@
     box-shadow: 0 0 0 3px rgba(67,160,71,0.18);
 }
 
-#personal-info input[readonly] {
+#personal-info input[readonly],
+#personal-info input:disabled,
+#personal-info select:disabled {
     background: var(--green-50);
     color: var(--text-secondary);
     cursor: not-allowed;

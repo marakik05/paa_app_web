@@ -17,7 +17,7 @@ function buildTaRow() {
     const td1 = document.createElement('td');
     td1.dataset.col = '1';
     const firstCat = allCats[0] || '';
-    const firstDescs = taMapping[firstCat] || [];
+    const firstDescs = (taMapping[firstCat] || []).filter(d => d !== '--Επιλέξτε');
     td1.appendChild(buildSearchableCombo(['--Επιλέξτε', ...firstDescs], '--Επιλέξτε'));
     tr.appendChild(td1);
 
@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // αν άλλαξε η κατηγορία (col 0) → ανανεώνει τις περιγραφές (col 1)
         if (td.dataset.col === '0') {
             const cells = td.closest('tr').querySelectorAll('td');
-            const descs = taMapping[e.target.value] || [];
+            const descs = (taMapping[e.target.value] || []).filter(d => d !== '--Επιλέξτε');
             destroyCombo(cells[1]);
             cells[1].innerHTML = '';
             cells[1].appendChild(buildSearchableCombo(['--Επιλέξτε', ...descs], '--Επιλέξτε'));
@@ -365,8 +365,12 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Κλειδώνει ΟΛΟ το section (disabled fieldset + nav link) + καθαρίζει δεδομένα
+// + κλειδώνει name/surname/district όσο δεν είναι επιλεγμένος παραγωγός
 function lockTaSection() {
     document.getElementById('ta-fieldset').disabled = true;
+    document.getElementById('name').disabled     = true;
+    document.getElementById('surname').disabled  = true;
+    document.getElementById('district').disabled = true;
     document.querySelector('.navbar a[data-page="ta"]').classList.add('nav-disabled');
     const tbody = document.querySelector('#ta-table tbody');
     tbody.querySelectorAll('tr').forEach(tr => {
@@ -385,9 +389,12 @@ function lockTaSection() {
     }
 }
 
-// Ξεκλειδώνει το section + nav link (μετά από "Επεξεργασία")
+// Ξεκλειδώνει το section + nav link + name/surname/district (μετά από "Επεξεργασία")
 function unlockTaSection() {
     document.getElementById('ta-fieldset').disabled = false;
+    document.getElementById('name').disabled     = false;
+    document.getElementById('surname').disabled  = false;
+    document.getElementById('district').disabled = false;
     document.querySelector('.navbar a[data-page="ta"]').classList.remove('nav-disabled');
 }
 
@@ -443,7 +450,7 @@ function loadTaTable(rows) {
         const cat  = r[3] || '';
         const desc = r[4] || '--Επιλέξτε';
         cells[0].querySelector('.combo-input').value = cat;
-        const descs = taMapping[cat] || [];
+        const descs = (taMapping[cat] || []).filter(d => d !== '--Επιλέξτε');
         destroyCombo(cells[1]);
         cells[1].innerHTML = '';
         cells[1].appendChild(buildSearchableCombo(['--Επιλέξτε', ...descs], desc));
