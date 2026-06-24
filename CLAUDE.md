@@ -13,7 +13,7 @@ UI strings, comments, and variable names are in Greek.
 
 - **Backend**: Python 3.x + Flask (`server.py`)
 - **Frontend**: Vanilla JS + HTML + CSS (χωρίς framework)
-- **Storage**: SQLite via `database_manager.py`; DB at `%LOCALAPPDATA%\OsdeCalculatorApp_web\osde_app_web.db`
+- **Storage**: SQLite via `database_manager.py`; DB at `%LOCALAPPDATA%\PaaApp_web\paa_app_web.db`
 - **Reference data**: `data/ta.xlsx` (τυπικές αποδόσεις) — φορτώνεται στο startup μέσω `utils/excel_loader.py`
 - **Styling**: 6 αρχεία CSS στο `static/` (βλ. πίνακα παρακάτω) — CSS variables (πράσινο θέμα) στο `base.css`
 
@@ -219,7 +219,7 @@ _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_
 
 ## Database (`database_manager.py`)
 
-DB path: `%LOCALAPPDATA%\OsdeCalculatorApp_web\osde_app_web.db`
+DB path: `%LOCALAPPDATA%\PaaApp_web\paa_app_web.db`
 
 ### Functions
 
