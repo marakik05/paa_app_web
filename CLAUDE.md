@@ -134,6 +134,7 @@ _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_
 |-----------|-----------|
 | `buildTaRow()` | Δημιουργεί νέα `<tr>` με όλα τα inputs |
 | `buildSearchableCombo(options, initialValue)` | Searchable combo με βελάκι (▼) + portal dropdown + tooltip |
+| `destroyCombo(td)` | Αφαιρεί το portal dropdown (body) + scroll listener ενός combo cell — κάλεσέ το πριν από κάθε `innerHTML=''`/`tr.remove()` που πετάει `.combo-wrapper`, αλλιώς memory leak |
 | `recalcAll()` | POST στο `/api/ta/recalculate` → ενημερώνει cols 2, 8, tfoot, lock states |
 | `getTaRows()` | Διαβάζει όλες τις γραμμές από DOM → 14-element arrays |
 | `loadTaTable(rows)` | Γεμίζει πίνακα από DB rows (17-element arrays από `fetch_entries`) |
@@ -205,7 +206,7 @@ _CANON_PAIR, _CANON_CAT, _VALID_CATS, _VALID_DESCS = build_canon_dicts(TA_VALUE_
 - Conflicts → `ImportConflictDialog` modal στο frontend (radio buttons ανά ΑΦΜ)
 - Αποφάσεις: `replace` (διαγράφει `osde_entries` + ενημερώνει **name, surname, region** + `last_modified`) ή `skip`
 - Μετά από import: καθαρισμός AFM/name/surname/district inputs + `lockTaSection()`
-- **Calculated fields ΔΕΝ εισάγονται** — πάντα ξαναυπολογίζονται
+- **Calculated fields δεν διαβάζονται από το xlsx** — το `/api/import/execute` τα υπολογίζει server-side πριν το insert, καλώντας τα ίδια `calc_row`/`calc_totals` (`utils/ta_calculations.py`) που χρησιμοποιεί το `/api/ta/recalculate`
 
 ### Export (`POST /api/producer/<afm>/export`)
 
@@ -337,7 +338,7 @@ Pure-Python functions χωρίς Qt dependency.
 
 ## Avoid
 
-- Μην εισάγεις calculated fields στο import (ΤΑ, totals) — ξαναυπολογίζονται πάντα
+- Μην διαβάζεις calculated fields (ΤΑ, totals) απευθείας από το xlsx στο import — υπολογίζονται πάντα server-side (`calc_row`/`calc_totals`)
 - Μην προσθέτεις timestamp logic στο `save_scenario_data` — το `save_producer_basics` το διαχειρίζεται
 - Μην χρησιμοποιείς `position: absolute` μέσα στον πίνακα για dropdowns — χρησιμοποίησε portal pattern
 - Μην κάνεις API call σε κάθε πάτημα πλήκτρου στα φίλτρα — φιλτράρισμα client-side μέσω cache
@@ -357,3 +358,14 @@ python server.py
 - `Flask`
 - `openpyxl`
 - `utils/excel_loader.py` (φορτώνει `data/ta.xlsx` μέσω `openpyxl`)
+
+## Tests / CI
+
+```bash
+pip install -r requirements.txt -r requirements-dev.txt
+python -m unittest discover -s tests -v
+```
+
+- `.github/workflows/tests.yml` — `unittest discover` σε κάθε push/PR (μόνο `requirements.txt`, χωρίς dev deps)
+- `.github/workflows/security.yml` — Bandit + pip-audit σε κάθε push/PR + Δευτέρα 06:00 UTC (cron)
+- `tests/test_frontend_e2e.py` — Playwright e2e (μέσα στο ίδιο `unittest discover`, **όχι** ξεχωριστό test runner). Παραλείπεται αυτόματα (skip) αν δεν υπάρχει `playwright`/`playwright install chromium` στο venv — γι' αυτό λείπει από το `tests.yml`
