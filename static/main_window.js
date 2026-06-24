@@ -214,10 +214,26 @@ function _showConflictModal(newData, conflicts) {
     conflicts.forEach(c => {
         const row = document.createElement('div');
         row.style.cssText = 'display:flex;align-items:center;gap:8px;margin:4px 0';
-        row.innerHTML =
-            `<span style="flex:1">${c.afm} — ${c.name} ${c.surname}</span>
-            <label><input type="radio" name="conf_${c.afm}" value="replace" checked> Αντικατάσταση</label>
-            <label><input type="radio" name="conf_${c.afm}" value="skip"> Παράλειψη</label>`;
+
+        const span = document.createElement('span');
+        span.style.flex = '1';
+        span.textContent = `${c.afm} — ${c.name} ${c.surname}`;
+        row.appendChild(span);
+
+        const makeRadio = (value, checked, labelText) => {
+            const label = document.createElement('label');
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = `conf_${c.afm}`;
+            input.value = value;
+            input.checked = checked;
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(' ' + labelText));
+            return label;
+        };
+        row.appendChild(makeRadio('replace', true, 'Αντικατάσταση'));
+        row.appendChild(makeRadio('skip', false, 'Παράλειψη'));
+
         list.appendChild(row);
     });
     document.getElementById('modal-import-conflict').style.display = 'block';

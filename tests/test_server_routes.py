@@ -29,6 +29,8 @@ def setUpModule():
     _tmp_dir = tempfile.mkdtemp()
     _orig_db_path = db.DB_PATH
     db.DB_PATH = os.path.join(_tmp_dir, 'test.db')
+    db.setup_database()  # ρητή δημιουργία πινάκων — δεν αρκεί το module-level setup_database()
+                          # του server.py αν το 'server' module είναι ήδη cached από άλλο test file
 
     import server as server_module
     server = server_module
