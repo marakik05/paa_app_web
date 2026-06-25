@@ -135,7 +135,7 @@ class TestSaveProducer(_ClientMixin):
 
     def test_saves_basics_and_rows(self):
         body = {
-            'name': 'Μαρία', 'surname': 'Κορρέ', 'region': 'Κρήτη',
+            'name': 'Μαρία', 'surname': 'Κ', 'region': 'Κρήτη',
             'initial_rows': [
                 ['CAT', 'DESC', 100.0, 5.0, 'Συμβατικά', 0, 0, '', 500.0, 500.0, 500.0, 0, 0, 0]
             ],
