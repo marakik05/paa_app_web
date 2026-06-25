@@ -185,7 +185,7 @@ def export_producer(afm):
         'Σύνολο ΤΑ', 'ΤΑ Παραγωγικών', 'ΤΑ Φυτικής', 'ΤΑ Ζωικής',
         'ΤΑ Μελίσσια/Μεταξοσκώληκες',
     ])
-    # getTaRows() layout: [cat(0),desc(1),typ_out(2),qty(3),cert(4),trees4+(5),trees4-(6),vine(7),out_pc(8),tot(9),prod(10),plant(11),animal(12),bees(13)]
+   
     for idx, r in enumerate(rows):
         row_totals = [
             _f(totals.get('total_ta')),
@@ -219,7 +219,7 @@ def export_producer(afm):
 
 
 if __name__ == '__main__':
-    # debug = os.environ.get('FLASK_DEBUG') == '1'
-    # app.run(debug=debug)
+    debug = os.environ.get('FLASK_DEBUG') == '1'
+    app.run(debug=debug)
     
-    app.run(debug=True) #nosec B201
+    # app.run(debug=True) #nosec B201

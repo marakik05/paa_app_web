@@ -6,7 +6,7 @@ let _hasUnsavedChanges = false;
 function markDirty() { _hasUnsavedChanges = true; }
 function markClean() { _hasUnsavedChanges = false; }
 
-// ─── DOMContentLoaded — αγγίζει DOM, πρέπει να περιμένει ───
+// ─── DOMContentLoaded  ───
 document.addEventListener('DOMContentLoaded', () => {
 
     // Σήμανση αλλαγών στα στοιχεία παραγωγού

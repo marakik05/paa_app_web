@@ -144,7 +144,7 @@ class TestSaveProducer(_ClientMixin):
         self.assertEqual(resp.get_json(), {'ok': True})
 
         producer = db.fetch_producer('123456789')
-        self.assertEqual(producer, ('Μαρία', 'Κορρέ', 'Κρήτη'))
+        self.assertEqual(producer, ('Μαρία', 'Κ', 'Κρήτη'))
         entries = db.fetch_entries('123456789', 'initial')
         self.assertEqual(len(entries), 1)
 
@@ -255,7 +255,7 @@ class TestImportParse(_ClientMixin):
 
     def test_valid_file_new_producer(self):
         xlsx_bytes = _write_xlsx_bytes([
-            ["123456789", "Maria", "Korre", "Αττική", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
+            ["123456789", "Maria", "K", "Αττική", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
         ])
         resp = self.client.post(
             '/api/import/parse',
@@ -271,7 +271,7 @@ class TestImportParse(_ClientMixin):
     def test_valid_file_existing_afm_is_conflict(self):
         db.save_producer_basics('123456789', 'Old', 'Name', 'Αττική')
         xlsx_bytes = _write_xlsx_bytes([
-            ["123456789", "Maria", "Korre", "Αττική", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
+            ["123456789", "Maria", "K", "Αττική", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
         ])
         resp = self.client.post(
             '/api/import/parse',
@@ -286,7 +286,7 @@ class TestImportParse(_ClientMixin):
 
     def test_invalid_region_in_file_returns_error(self):
         xlsx_bytes = _write_xlsx_bytes([
-            ["123456789", "Maria", "Korre", "Ανύπαρκτη", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
+            ["123456789", "Maria", "K", "Ανύπαρκτη", "Cat", "Desc", 1, "Συμβατικά", "", "", ""]
         ])
         resp = self.client.post(
             '/api/import/parse',
@@ -305,7 +305,7 @@ class TestImportExecute(_ClientMixin):
     def test_execute_new_producer(self):
         body = {
             'producers': [{
-                'afm': '123456789', 'name': 'Maria', 'surname': 'Korre', 'region': 'Αττική',
+                'afm': '123456789', 'name': 'Maria', 'surname': 'K', 'region': 'Αττική',
                 'rows': [{'category_osde': 'Cat', 'description': 'Desc', 'quantity': '1',
                           'certification': '', 'trees_over_4': '', 'trees_under_4': '', 'vine_over_3': ''}],
             }],

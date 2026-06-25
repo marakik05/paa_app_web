@@ -3,34 +3,44 @@
 [![Tests](https://github.com/marakik05/paa_app_web/actions/workflows/tests.yml/badge.svg)](https://github.com/marakik05/paa_app_web/actions/workflows/tests.yml)
 [![Security](https://github.com/marakik05/paa_app_web/actions/workflows/security.yml/badge.svg)](https://github.com/marakik05/paa_app_web/actions/workflows/security.yml)
 
-Web εφαρμογή για Έλληνες γεωπόνους μελετητές με σκοπό τον υπολογισμό της τυπικής απόδοσης των Παρεμβάσεων του **ΠΑΑ 2023-2027**.
+Web εφαρμογή για Έλληνες γεωτεχνικούς μελετητές με σκοπό τον υπολογισμό της τυπικής απόδοσης υποψήφιων παραγωγούν που επιθυμούν να υποβάλλουν αίτηση στήριξης στις Παρεμβάσεις του **ΠΑΑ 2023-2027**.
 
-Είναι η web έκδοση της desktop εφαρμογής `paa_app_moria` (PySide2), φτιαγμένη με **Flask + JS**.
 
 ## Περιεχόμενα
 
 - [Λειτουργίες](#λειτουργίες)
+- [Screenshots](#screenshots)
 - [Τεχνολογίες](#τεχνολογίες)
 - [Εγκατάσταση](#εγκατάσταση)
 - [Εκτέλεση](#εκτέλεση)
 - [Tests](#tests)
 - [Δομή Project](#δομή-project)
 - [API](#api)
+- [Επικοινωνία](#-επικοινωνία)
+- [License](#-license)
 
 ## Λειτουργίες
 
 - 📋 Συγκεντρωτικός πίνακας παραγωγών με αναζήτηση/φιλτράρισμα (ΑΦΜ, Επώνυμο)
-- 🧮 Υπολογισμός Τυπικής Απόδοσης (ΤΑ) Αρχικής ανά ΑΦΜ, βάσει κατηγορίας ΟΣΔΕ, περιφέρειας και χαρακτηριστικών εκμετάλλευσης
+- 🧮 Υπολογισμός Τυπικής Απόδοσης (ΤΑ)  ανά ΑΦΜ, βάσει κατηγορίας ΟΣΔΕ, περιφέρειας και χαρακτηριστικών εκμετάλλευσης
 - 📥 Εισαγωγή δεδομένων από αρχείο **xlsx** με έλεγχο συγκρούσεων (conflicts) ανά ΑΦΜ
 - 📤 Εξαγωγή δεδομένων ΤΑ σε **xlsx**
 - 💾 Αποθήκευση σε τοπική βάση **SQLite**
+
+## Screenshots
+
+### Συγκεντρωτικός πίνακας παραγωγών
+![Αρχική](screenshots/arxiki.png)
+
+### Πίνακας υπολογισμού ΤΑ
+![ΤΑ](screenshots/ta.png)
 
 ## Τεχνολογίες
 
 | Layer | Τεχνολογία |
 |-------|------------|
 | Backend | Python 3.x + Flask |
-| Frontend | JavaScript, HTML, CSS (χωρίς framework) |
+| Frontend | JavaScript, HTML, CSS|
 | Storage | SQLite (`database_manager.py`) |
 | Reference data | `data/ta.xlsx` (φορτώνεται μέσω `openpyxl`) |
 
@@ -57,7 +67,7 @@ python server.py
 ## Tests
 
 ```bash
-pip install -r requirements.txt -r requirements-dev.txt
+pip install -r requirements-dev.txt
 python -m unittest discover -s tests -v
 ```
 
@@ -96,7 +106,7 @@ paa_app_web/
 |--------|-------|-----------|
 | `GET` | `/` | Render index.html |
 | `GET` | `/api/regions` | Λίστα περιφερειών |
-| `GET` | `/api/producer/<afm>/exists` | Έλεγχος αν ΑΦΜ υπάρχει |
+| `GET` | `/api/producer/<afm>/exists` | Έλεγχος αν υπάρχει ΑΦΜ |
 | `GET` | `/api/producer/<afm>/full` | Δεδομένα παραγωγού + ΤΑ γραμμές |
 | `POST` | `/api/producer/<afm>/save` | Αποθήκευση παραγωγού + ΤΑ |
 | `DELETE` | `/api/producer/<afm>` | Διαγραφή παραγωγού |
@@ -106,4 +116,12 @@ paa_app_web/
 | `POST` | `/api/import/parse` | Parse xlsx → new_data + conflicts |
 | `POST` | `/api/import/execute` | Εκτέλεση import με αποφάσεις |
 | `POST` | `/api/producer/<afm>/export` | Export ΤΑ σε xlsx |
+
+## 📬 Επικοινωνία
+
+Για οποιαδήποτε ερώτηση ή σχόλιο, μπορείτε να ανοίξετε ένα issue στο repository.
+
+## 📄 License
+
+Διανέμεται υπό την **PolyForm Noncommercial License 1.0.0**. Επιτρέπεται η λήψη, προβολή, τοπική εκτέλεση και τροποποίηση του κώδικα **αποκλειστικά για μη-εμπορικούς σκοπούς**. Κάθε εμπορική χρήση απαιτεί ξεχωριστή άδεια. Δείτε το αρχείο [LICENSE](LICENSE) για λεπτομέρειες.
 

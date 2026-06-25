@@ -24,7 +24,7 @@ function buildTaRow() {
     // col 2: read-only (Τυπική Απόδοση — γεμίζει από server)
     const td2 = document.createElement('td');
     td2.dataset.col = '2';
-    //td2.style.backgroundColor = '#E3F2FD';
+    
     tr.appendChild(td2);
 
     // col 3: input έκτασης/αριθμού ζώων
@@ -99,7 +99,7 @@ function buildTaRow() {
     // col 8: read-only (ΤΑ ανά επιλογή — γεμίζει από server)
     const td8 = document.createElement('td');
     td8.dataset.col = '8';
-    //td8.style.backgroundColor = '#E3F2FD';
+    
     tr.appendChild(td8);
 
     // col 9: κουμπί διαγραφής γραμμής

@@ -52,17 +52,6 @@ def _run_migrations(cursor):
     try:
         cursor.execute("BEGIN")
 
-        # Version 0: baseline — κανένα migration step δεν εκτελείται ακόμη.
-        # Όταν χρειαστεί migration μετά το release, ξεσχολίασε τα παρακάτω
-        # και bump το SCHEMA_VERSION:
-        #
-        # if current < 1:
-        #     _add_column_if_missing(cursor, "eligibility", "new_col", "TEXT")
-        #
-        # if current < 2:
-        #     cursor.execute("DROP TABLE IF EXISTS obsolete_table")
-        #     cursor.execute("CREATE TABLE ...")
-
         cursor.execute("PRAGMA user_version = {}".format(SCHEMA_VERSION))
         cursor.execute("COMMIT")
 
@@ -79,7 +68,7 @@ def setup_database():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
-    #  UTF-8 encoding (για κάλυψη των windows 7)
+   
     cursor.execute("PRAGMA encoding = 'UTF-8';")
     
     # Ενεργοποίηση Foreign Keys (απαραίτητο για το Cascade)
