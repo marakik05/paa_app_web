@@ -49,8 +49,23 @@ Web εφαρμογή για Έλληνες γεωτεχνικούς μελετη
 ```bash
 git clone https://github.com/marakik05/paa_app_web.git
 cd paa_app_web
+```
+
+Δημιουργία και ενεργοποίηση virtual environment — διαλέξτε **έναν** από τους δύο τρόπους:
+
+**Με `venv` (built-in Python):**
+
+```bash
 python -m venv venv
 venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+```
+
+**Με Anaconda / conda:**
+
+```bash
+conda create -n web python=3.11
+conda activate web
 pip install -r requirements.txt
 ```
 
